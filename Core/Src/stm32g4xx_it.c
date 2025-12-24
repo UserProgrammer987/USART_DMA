@@ -60,6 +60,7 @@ extern TIM_HandleTypeDef htim6;
 extern DMA_HandleTypeDef hdma_usart1_tx;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart2_tx;
+extern DMA_HandleTypeDef hdma_usart2_rx;
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
 /* USER CODE BEGIN EV */
@@ -211,10 +212,15 @@ void DMA1_Channel1_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Channel1_IRQn 0 */
 	
+	if (DMA1 -> ISR & DMA_ISR_TCIF1){
+		DMA1 -> IFCR |= DMA_ISR_TCIF1;
+		
+		DMA1_Channel1 -> CCR &= ~DMA_CCR_EN;
+	}
 	
 
   /* USER CODE END DMA1_Channel1_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_usart1_tx);
+  //HAL_DMA_IRQHandler(&hdma_usart1_tx);
   /* USER CODE BEGIN DMA1_Channel1_IRQn 1 */
 
   /* USER CODE END DMA1_Channel1_IRQn 1 */
@@ -228,7 +234,7 @@ void DMA1_Channel2_IRQHandler(void)
   /* USER CODE BEGIN DMA1_Channel2_IRQn 0 */
 
   /* USER CODE END DMA1_Channel2_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_usart1_rx);
+  //HAL_DMA_IRQHandler(&hdma_usart1_rx);
   /* USER CODE BEGIN DMA1_Channel2_IRQn 1 */
 
   /* USER CODE END DMA1_Channel2_IRQn 1 */
@@ -240,13 +246,57 @@ void DMA1_Channel2_IRQHandler(void)
 void DMA1_Channel3_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Channel3_IRQn 0 */
-
+	
+	/*
+	if (DMA1 -> ISR & DMA_ISR_TCIF3){
+		DMA1 -> IFCR |= DMA_ISR_TCIF3;
+	}
+	
+	DMA1_Channel3 -> CCR &= ~DMA_CCR_EN;
+	*/
+	
+	//GPIOC -> ODR ^= (1 << 6);
+	
+	if (DMA1 -> ISR & DMA_ISR_TCIF3){
+		
+		DMA1 -> IFCR |= DMA_ISR_TCIF3;
+		
+		DMA1_Channel3 -> CCR &= ~DMA_CCR_EN;
+		
+		
+		for (uint8_t i = 0; i<10; i++){
+				nums[i]++;
+		}
+		
+		
+	}
 	
   /* USER CODE END DMA1_Channel3_IRQn 0 */
   //HAL_DMA_IRQHandler(&hdma_usart2_tx);
   /* USER CODE BEGIN DMA1_Channel3_IRQn 1 */
 
   /* USER CODE END DMA1_Channel3_IRQn 1 */
+}
+
+/**
+  * @brief This function handles DMA1 channel4 global interrupt.
+  */
+void DMA1_Channel4_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Channel4_IRQn 0 */
+	
+	//GPIOC -> ODR ^= (1 << 6);
+		
+	//if (DMA1->ISR & DMA_ISR_TCIF4){
+	//	DMA1 -> IFCR |= (DMA_ISR_TCIF4);
+	//}
+	
+	
+  /* USER CODE END DMA1_Channel4_IRQn 0 */
+  //HAL_DMA_IRQHandler(&hdma_usart2_rx);
+  /* USER CODE BEGIN DMA1_Channel4_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel4_IRQn 1 */
 }
 
 /**
@@ -257,7 +307,7 @@ void USART1_IRQHandler(void)
   /* USER CODE BEGIN USART1_IRQn 0 */
 	
   /* USER CODE END USART1_IRQn 0 */
-  HAL_UART_IRQHandler(&huart1);
+  //HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
   /* USER CODE END USART1_IRQn 1 */
 }
@@ -270,7 +320,7 @@ void USART2_IRQHandler(void)
   /* USER CODE BEGIN USART2_IRQn 0 */
 
   /* USER CODE END USART2_IRQn 0 */
-  HAL_UART_IRQHandler(&huart2);
+  //HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
 
   /* USER CODE END USART2_IRQn 1 */
