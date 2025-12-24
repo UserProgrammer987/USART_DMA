@@ -209,11 +209,14 @@ int main(void)
 	usart2_recieve_DMA_ch4_config(nums, 10);
 	usart1_receive_dma_ch2_config(nums, 10);
 	
-	HAL_TIM_Base_Start_IT(&htim6);
+	//HAL_TIM_Base_Start_IT(&htim6);
+	
+	TIM6 -> CR1 |= TIM_CR1_CEN;
+	TIM6 -> DIER |= TIM_DIER_UIE;
 	
 	
 	
-	
+
 	
 	
 	
@@ -295,8 +298,6 @@ void SystemClock_Config(void)
 	//HAL_UART_Transmit_DMA(&huart1, nums, 10);
 
 
-	 usart2_transmit_dma(nums, 10);
-	 usart1_transmit_dma(nums, 10);
 
 		
 		

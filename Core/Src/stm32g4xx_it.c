@@ -47,7 +47,8 @@ extern uint8_t cnt;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-
+extern void usart2_transmit_dma();
+extern void usart1_transmit_dma();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -334,8 +335,14 @@ void TIM6_DAC_IRQHandler(void)
   /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
 
   /* USER CODE END TIM6_DAC_IRQn 0 */
-  HAL_TIM_IRQHandler(&htim6);
+  //HAL_TIM_IRQHandler(&htim6);
   /* USER CODE BEGIN TIM6_DAC_IRQn 1 */
+	
+	TIM6 -> SR &= ~TIM_SR_UIF;
+	
+	usart2_transmit_dma(nums, 10);
+	usart1_transmit_dma(nums, 10);
+
 
   /* USER CODE END TIM6_DAC_IRQn 1 */
 }

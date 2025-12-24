@@ -28,11 +28,16 @@ Project File Date:  12/24/2025
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Andrew\Keil\ARM\ARMCC\Bin'
 Build target 'USART'
 compiling stm32g4xx_it.c...
+../Core/Src/stm32g4xx_it.c(50): warning:  #1295-D: Deprecated declaration usart2_transmit_dma - give arg types
+  extern void usart2_transmit_dma();
+../Core/Src/stm32g4xx_it.c(51): warning:  #1295-D: Deprecated declaration usart1_transmit_dma - give arg types
+  extern void usart1_transmit_dma();
+../Core/Src/stm32g4xx_it.c: 2 warnings, 0 errors
 compiling main.c...
 linking...
-Program Size: Code=8650 RO-data=570 RW-data=28 ZI-data=2388  
+Program Size: Code=8102 RO-data=570 RW-data=28 ZI-data=2388  
 FromELF: creating hex file...
-"USART\USART.axf" - 0 Error(s), 0 Warning(s).
+"USART\USART.axf" - 0 Error(s), 2 Warning(s).
 
 <h2>Software Packages used:</h2>
 
