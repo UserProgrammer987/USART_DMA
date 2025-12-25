@@ -35,41 +35,40 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-
 /* USER CODE BEGIN PV */
+
 uint8_t nums[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
 uint8_t cnt = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
 /* USER CODE END PFP */
-
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+// usart 1 закорочен tx на rx
 void usart1_transmit_dma(uint8_t *data, uint8_t size){
-		
+	
 	USART1 -> CR3 |= USART_CR3_DMAT;
 	
 	DMA1_Channel1 -> CCR |= DMA_CCR_TCIE;
 	
 	DMA1_Channel1 -> CNDTR = size;
 	DMA1_Channel1 -> CPAR = (uint32_t)&USART1 -> TDR;
-	DMA1_Channel3 -> CMAR = (uint32_t)data;
-	
-	DMA1_Channel3 -> CCR |= DMA_CCR_EN;
+	DMA1_Channel1 -> CMAR = (uint32_t)data;
+
+	DMA1_Channel1 -> CCR |= DMA_CCR_EN;
 	
 }
 
@@ -77,80 +76,34 @@ void usart1_receive_dma_ch2_config(uint8_t *data, uint8_t size){
 	
 	USART1 -> CR3 |= USART_CR3_DMAR;
 	
+	DMA1_Channel2 -> CCR |= DMA_CCR_TCIE;
+	
 	DMA1_Channel2 -> CNDTR = size;
 	DMA1_Channel2 -> CPAR = (uint32_t)&USART1 -> RDR;
 	DMA1_Channel2 -> CMAR = (uint32_t)data; 
 	
 	DMA1_Channel2 -> CCR |= DMA_CCR_EN;
 	
-
 }
 
+// usart 2 отправляет данные на пк по DMA
 void usart2_transmit_dma(uint8_t *data, uint8_t size){
-	/*
-	DMA1_Channel3 -> CNDTR = size;
-	DMA1_Channel3 -> CPAR = (uint32_t)&USART2 -> TDR;
-	DMA1_Channel3 -> CMAR = (uint32_t)data;
-	
-	//USART1 -> ICR |= USART_ICR_TCCF;
-			
-	DMA1_Channel3 -> CCR |= DMA_CCR_EN;
-			
-	while( !(DMA1 -> ISR & DMA_ISR_TCIF3) );
-			
-	DMA1 -> IFCR = DMA_IFCR_CTCIF3;
-			
-	DMA1_Channel3 -> CCR &= ~DMA_CCR_EN;
-	
-	//while (!(USART2->ISR & USART_ISR_TXE));
-	
-	*/
-	
-	//USART2 -> CR1 |= USART_CR1_TE;
 	
 	USART2 -> CR3 |= USART_CR3_DMAT; 
 	
 	DMA1_Channel3 -> CCR |= DMA_CCR_TCIE; 
 	
-	//DMA1_Channel3 -> CCR |= DMA_CCR_HTIE;
-	//DMA1_Channel3 -> CCR |= DMA_CCR_TEIE;
-	
-	/*
-	DMA1_Channel3 -> CCR |= DMA_CCR_TCIE;
-	DMA1_Channel3 -> CCR |= DMA_CCR_DIR;
-	DMA1_Channel3 -> CCR &= ~DMA_CCR_CIRC;
-	DMA1_Channel3 -> CCR |= DMA_CCR_PINC;
-	DMA1_Channel3 -> CCR &= ~(DMA_CCR_PSIZE | DMA_CCR_MSIZE);
-	DMA1_Channel3 -> CCR |= DMA_CCR_PL_0;
-	*/
-	
 	DMA1_Channel3 -> CNDTR = size;
 	DMA1_Channel3 -> CPAR = (uint32_t)&USART2 -> TDR;
 	DMA1_Channel3 -> CMAR = (uint32_t)data;
 	
-	//USART1 -> ICR |= USART_ICR_TCCF;
-	
 	DMA1_Channel3 -> CCR |= DMA_CCR_EN;
 	
-	//DMA1_Channel3 -> CCR &= ~DMA_CCR_EN;
-
 }
-
-
 
 void usart2_recieve_DMA_ch4_config(uint8_t *data, uint8_t size){
 	
-	//USART2 -> CR1 |= USART_CR1_RE;
-	
 	USART2 -> CR3 |= USART_CR3_DMAR; 
-	
-	//DMA1_Channel4 -> CCR |=  DMA_CCR_TCIE;
-	//DMA1_Channel4 -> CCR &= ~(DMA_CCR_DIR);
-	//DMA1_Channel4 -> CCR |= DMA_CCR_CIRC;
-	//DMA1_Channel4 -> CCR |= DMA_CCR_MINC;
-	//DMA1_Channel4 -> CCR &= ~(DMA_CCR_PSIZE);
-	//DMA1_Channel4 -> CCR &= ~(DMA_CCR_MSIZE);
-	//DMA1_Channel4 -> CCR |= DMA_CCR_PL_0 | DMA_CCR_PL_1;
 	
 	DMA1_Channel4 -> CNDTR = size;
 	DMA1_Channel4 -> CPAR = (uint32_t)&USART2 -> RDR;
@@ -160,7 +113,50 @@ void usart2_recieve_DMA_ch4_config(uint8_t *data, uint8_t size){
 	
 }
 
+void interruptHandler_DMA1_Channel1(){
+	
+	if (DMA1 -> ISR & DMA_ISR_TCIF1){
+		
+		DMA1 -> IFCR |= DMA_ISR_TCIF1;
+		
+		DMA1_Channel1 -> CCR &= ~DMA_CCR_EN;
+		
+	}
+	
+}
 
+void interruptHandler_DMA1_Channel2(){
+
+	if (DMA1 -> ISR & DMA_ISR_TCIF2){
+		DMA1 -> IFCR |= DMA_ISR_TCIF2;
+		
+		for (uint8_t i = 0; i<10; i++){
+			nums[i]++;
+		}
+		
+	}
+	
+}
+
+void interruptHandler_DMA1_Channel3(){
+	
+	if (DMA1 -> ISR & DMA_ISR_TCIF3){
+		
+		DMA1 -> IFCR |= DMA_ISR_TCIF3;
+		DMA1_Channel3 -> CCR &= ~DMA_CCR_EN;
+		
+	}
+	
+}
+
+void interruptHandler_timer6(){
+	
+	TIM6 -> SR &= ~TIM_SR_UIF;
+	
+	usart1_transmit_dma(nums, 10);
+	usart2_transmit_dma(nums, 10);
+	
+}
 
 /* USER CODE END 0 */
 
@@ -170,27 +166,17 @@ void usart2_recieve_DMA_ch4_config(uint8_t *data, uint8_t size){
   */
 int main(void)
 {
-
   /* USER CODE BEGIN 1 */
-
   /* USER CODE END 1 */
-
   /* MCU Configuration--------------------------------------------------------*/
-
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-
   /* USER CODE BEGIN Init */
-	
   /* USER CODE END Init */
-
   /* Configure the system clock */
   SystemClock_Config();
-
   /* USER CODE BEGIN SysInit */
-
   /* USER CODE END SysInit */
-
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
@@ -198,33 +184,24 @@ int main(void)
   MX_TIM6_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-	//HAL_UART_Transmit_DMA(&huart2, nums, 10);
 	
-	//NVIC_SetPriority(DMA1_Channel4_IRQn, 1);
-	//NVIC_SetPriority(DMA1_Channel3_IRQn, 0);
+	__enable_irq();
 	
-	//NVIC_EnableIRQ(DMA1_Channel4_IRQn);
-	//NVIC_EnableIRQ(DMA1_Channel3_IRQn);
+	NVIC_SetPriority(DMA1_Channel1_IRQn, 0);
+	NVIC_SetPriority(DMA1_Channel2_IRQn, 0);
+	NVIC_SetPriority(DMA1_Channel3_IRQn, 0);
+	NVIC_SetPriority(DMA1_Channel4_IRQn, 0);
+	
+	NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+	NVIC_EnableIRQ(DMA1_Channel2_IRQn);
+	NVIC_EnableIRQ(DMA1_Channel3_IRQn);
+	NVIC_EnableIRQ(DMA1_Channel4_IRQn);
 	
 	usart2_recieve_DMA_ch4_config(nums, 10);
 	usart1_receive_dma_ch2_config(nums, 10);
 	
-	//HAL_TIM_Base_Start_IT(&htim6);
-	
 	TIM6 -> CR1 |= TIM_CR1_CEN;
 	TIM6 -> DIER |= TIM_DIER_UIE;
-	
-	
-	
-
-	
-	
-	
-	
-
-	//HAL_UART_Receive_DMA(&huart2, nums, 10);
-	
-	
 	
   /* USER CODE END 2 */
 
@@ -233,11 +210,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
-
-
-    
+    /* USER CODE BEGIN 3 */  
   }
   /* USER CODE END 3 */
 }
@@ -289,34 +262,6 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
- void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-	
-   //GPIOC -> ODR ^= (1 << 6); 
-
-	 
-	//HAL_UART_Transmit_DMA(&huart2, nums, 10);
-	//HAL_UART_Transmit_DMA(&huart1, nums, 10);
-
-
-
-		
-		
-}
-
-
-/*void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-	
-
-		GPIOC -> ODR ^= (1 << 6);
-	
-		for (uint8_t i = 0; i<10; i++){
-			
-			nums[i]++;
-			
-		}	
-
-}*/
-
 /* USER CODE END 4 */
 
 /**

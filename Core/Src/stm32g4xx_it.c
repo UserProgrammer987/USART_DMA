@@ -47,8 +47,12 @@ extern uint8_t cnt;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-extern void usart2_transmit_dma();
-extern void usart1_transmit_dma();
+extern void usart2_transmit_dma(uint8_t *data, uint8_t size);
+extern void usart1_transmit_dma(uint8_t *data, uint8_t size);
+extern void interruptHandler_timer6(void);
+extern void interruptHandler_DMA1_Channel3(void);
+extern void interruptHandler_DMA1_Channel2(void);
+extern void interruptHandler_DMA1_Channel1(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -213,17 +217,10 @@ void DMA1_Channel1_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Channel1_IRQn 0 */
 	
-	if (DMA1 -> ISR & DMA_ISR_TCIF1){
-		DMA1 -> IFCR |= DMA_ISR_TCIF1;
-		
-		DMA1_Channel1 -> CCR &= ~DMA_CCR_EN;
-	}
-	
+	interruptHandler_DMA1_Channel1();
 
   /* USER CODE END DMA1_Channel1_IRQn 0 */
-  //HAL_DMA_IRQHandler(&hdma_usart1_tx);
   /* USER CODE BEGIN DMA1_Channel1_IRQn 1 */
-
   /* USER CODE END DMA1_Channel1_IRQn 1 */
 }
 
@@ -233,11 +230,11 @@ void DMA1_Channel1_IRQHandler(void)
 void DMA1_Channel2_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Channel2_IRQn 0 */
+	
+	interruptHandler_DMA1_Channel2();
 
   /* USER CODE END DMA1_Channel2_IRQn 0 */
-  //HAL_DMA_IRQHandler(&hdma_usart1_rx);
   /* USER CODE BEGIN DMA1_Channel2_IRQn 1 */
-
   /* USER CODE END DMA1_Channel2_IRQn 1 */
 }
 
@@ -248,34 +245,10 @@ void DMA1_Channel3_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Channel3_IRQn 0 */
 	
-	/*
-	if (DMA1 -> ISR & DMA_ISR_TCIF3){
-		DMA1 -> IFCR |= DMA_ISR_TCIF3;
-	}
-	
-	DMA1_Channel3 -> CCR &= ~DMA_CCR_EN;
-	*/
-	
-	//GPIOC -> ODR ^= (1 << 6);
-	
-	if (DMA1 -> ISR & DMA_ISR_TCIF3){
-		
-		DMA1 -> IFCR |= DMA_ISR_TCIF3;
-		
-		DMA1_Channel3 -> CCR &= ~DMA_CCR_EN;
-		
-		
-		for (uint8_t i = 0; i<10; i++){
-				nums[i]++;
-		}
-		
-		
-	}
+	interruptHandler_DMA1_Channel3();
 	
   /* USER CODE END DMA1_Channel3_IRQn 0 */
-  //HAL_DMA_IRQHandler(&hdma_usart2_tx);
   /* USER CODE BEGIN DMA1_Channel3_IRQn 1 */
-
   /* USER CODE END DMA1_Channel3_IRQn 1 */
 }
 
@@ -285,18 +258,8 @@ void DMA1_Channel3_IRQHandler(void)
 void DMA1_Channel4_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Channel4_IRQn 0 */
-	
-	//GPIOC -> ODR ^= (1 << 6);
-		
-	//if (DMA1->ISR & DMA_ISR_TCIF4){
-	//	DMA1 -> IFCR |= (DMA_ISR_TCIF4);
-	//}
-	
-	
   /* USER CODE END DMA1_Channel4_IRQn 0 */
-  //HAL_DMA_IRQHandler(&hdma_usart2_rx);
   /* USER CODE BEGIN DMA1_Channel4_IRQn 1 */
-
   /* USER CODE END DMA1_Channel4_IRQn 1 */
 }
 
@@ -306,9 +269,7 @@ void DMA1_Channel4_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
-	
   /* USER CODE END USART1_IRQn 0 */
-  //HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
   /* USER CODE END USART1_IRQn 1 */
 }
@@ -319,11 +280,8 @@ void USART1_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
-
   /* USER CODE END USART2_IRQn 0 */
-  //HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
-
   /* USER CODE END USART2_IRQn 1 */
 }
 
@@ -333,17 +291,9 @@ void USART2_IRQHandler(void)
 void TIM6_DAC_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
-
   /* USER CODE END TIM6_DAC_IRQn 0 */
-  //HAL_TIM_IRQHandler(&htim6);
   /* USER CODE BEGIN TIM6_DAC_IRQn 1 */
-	
-	TIM6 -> SR &= ~TIM_SR_UIF;
-	
-	usart2_transmit_dma(nums, 10);
-	usart1_transmit_dma(nums, 10);
-
-
+	interruptHandler_timer6();
   /* USER CODE END TIM6_DAC_IRQn 1 */
 }
 
