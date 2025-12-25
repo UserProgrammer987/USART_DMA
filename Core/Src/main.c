@@ -101,6 +101,7 @@ void usart2_transmit_dma(uint8_t *data, uint8_t size){
 	
 }
 
+// принятие данных по usart2 и usart1 работает в циклическом режиме DMA
 void usart2_recieve_DMA_ch4_config(uint8_t *data, uint8_t size){
 	
 	USART2 -> CR3 |= USART_CR3_DMAR; 
@@ -184,18 +185,6 @@ int main(void)
   MX_TIM6_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-	
-	__enable_irq();
-	
-	NVIC_SetPriority(DMA1_Channel1_IRQn, 0);
-	NVIC_SetPriority(DMA1_Channel2_IRQn, 0);
-	NVIC_SetPriority(DMA1_Channel3_IRQn, 0);
-	NVIC_SetPriority(DMA1_Channel4_IRQn, 0);
-	
-	NVIC_EnableIRQ(DMA1_Channel1_IRQn);
-	NVIC_EnableIRQ(DMA1_Channel2_IRQn);
-	NVIC_EnableIRQ(DMA1_Channel3_IRQn);
-	NVIC_EnableIRQ(DMA1_Channel4_IRQn);
 	
 	usart2_recieve_DMA_ch4_config(nums, 10);
 	usart1_receive_dma_ch2_config(nums, 10);
