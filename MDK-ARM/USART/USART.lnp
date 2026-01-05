@@ -7,6 +7,7 @@
 "usart\usart.o"
 "usart\stm32g4xx_it.o"
 "usart\stm32g4xx_hal_msp.o"
+"usart\modbus.o"
 "usart\stm32g4xx_hal_pwr_ex.o"
 "usart\stm32g4xx_hal_tim.o"
 "usart\stm32g4xx_hal_tim_ex.o"
