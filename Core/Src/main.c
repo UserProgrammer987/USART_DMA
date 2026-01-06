@@ -22,7 +22,6 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
-#include "Modbus.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -88,7 +87,7 @@ static const uint8_t table_crc_lo[] = {
 };
 
 static uint16_t Holding_Registers_Database[50]={
-		0000,  1111,  2222,  3333,  4444,  5555,  6666,  7777,  8888,  9999,   // 0-9   40001-40010
+		1234,  1111,  2222,  3333,  4444,  5555,  6666,  7777,  8888,  9999,   // 0-9   40001-40010
 		12345, 15432, 15535, 10234, 19876, 13579, 10293, 19827, 13456, 14567,  // 10-19 40011-40020
 		21345, 22345, 24567, 25678, 26789, 24680, 20394, 29384, 26937, 27654,  // 20-29 40021-40030
 		31245, 31456, 34567, 35678, 36789, 37890, 30948, 34958, 35867, 36092,  // 30-39 40031-40040
@@ -144,6 +143,8 @@ uint16_t crc16(uint8_t *buffer, uint16_t buffer_length)
 uint8_t TxData[256];
 uint8_t RxData[256];
 
+uint8_t testRespond[7] = {0x01, 0x03, 0x00, 0x00, 0x02, 0x04, 0x57};
+
 uint8_t receive_cnt = 0;
 
 /* USER CODE END PV */
@@ -176,15 +177,17 @@ void usart1_transmit_dma(uint8_t size){
 	
 	DMA1_Channel1 -> CCR &= ~(DMA_CCR_EN);
 	
-	//GPIOC -> ODR |= (1 << 6);
+	GPIOC -> ODR |= (1 << 6); //включить передачу по конвертеру
 	
-	DMA1_Channel1 -> CCR |= DMA_CCR_EN;
+	DMA1_Channel1 -> CCR |= DMA_CCR_EN; 
+	
+	while (!(USART1 -> ISR  & USART_ISR_TC)); //подождать пока ответ дойдёт до master
+	GPIOC -> ODR &= ~(1 << 6); //выключить передачу по конвертеру и включить приём
+	//HAL_Delay(1);
 	
 }
 
 void usart1_receive_dma_ch2_config(uint8_t *data, uint8_t size){
-	
-	GPIOC -> ODR &= ~(1 << 6);
 	
 	USART1 -> CR3 |= USART_CR3_DMAR;
 	
@@ -195,8 +198,6 @@ void usart1_receive_dma_ch2_config(uint8_t *data, uint8_t size){
 	DMA1_Channel2 -> CNDTR = size;
 	DMA1_Channel2 -> CPAR = (uint32_t)&USART1 -> RDR;
 	DMA1_Channel2 -> CMAR = (uint32_t)data; 
-	
-	//DMA1_Channel2 -> CCR |= DMA_CCR_EN;
 	
 }
 
@@ -245,8 +246,6 @@ void DMA1_Channel1_IRQHandler(void){
 		
 		DMA1_Channel1 -> CCR &= ~DMA_CCR_EN;
 		
-		//GPIOC -> ODR &= ~(1 << 6);
-		
 	}
 
 }
@@ -255,6 +254,7 @@ void DMA1_Channel2_IRQHandler(void){
 	
 	if (DMA1 -> ISR & DMA_ISR_TCIF2){
 		DMA1 -> IFCR |= DMA_ISR_TCIF2;
+		
 	}
 	
 }
@@ -275,7 +275,7 @@ void TIM6_DAC_IRQHandler(void){
 	TIM6 -> SR &= ~TIM_SR_UIF;
 	
 	//usart1_transmit_dma(10);
-	
+
 }
 
 
@@ -288,6 +288,7 @@ void sendData (uint8_t *data, int size)
 
 	usart1_transimt_dma_config(data, size+2);
 	usart1_transmit_dma(size+2);
+	
 }
 
 uint8_t readHoldingRegs (void){
@@ -303,7 +304,7 @@ uint8_t readHoldingRegs (void){
 	//| SLAVE_ID | FUNCTION_CODE | BYTE COUNT | DATA      | CRC     |
 	//| 1 BYTE   |  1 BYTE       |  1 BYTE    | N*2 BYTES | 2 BYTES |
 
-	TxData[0] = SLAVE_ID;  // slave ID
+	TxData[0] = SLAVE_ID_mine;  // slave ID
 	TxData[1] = RxData[1];  // function code
 	TxData[2] = numRegs*2;  // Byte count
 	int indx = 3;  // we need to keep track of how many bytes has been stored in TxData Buffer
@@ -318,6 +319,9 @@ uint8_t readHoldingRegs (void){
 	sendData(TxData, indx);  // send data... CRC will be calculated in the function itself
 	return 1;   // success
 }
+
+
+
 
 void USART1_IRQHandler(void){
 	
@@ -340,11 +344,16 @@ void USART1_IRQHandler(void){
 		
 		}
 		
+		DMA1_Channel2->CMAR = (uint32_t)RxData;
+    DMA1_Channel2->CNDTR = 256;
+		
 		DMA1_Channel2 -> CCR |= DMA_CCR_EN;
 		
 	}
 	
 }
+
+
 
 /* USER CODE END 0 */
 
@@ -380,10 +389,11 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 	
+	GPIOC -> ODR &= ~(1 << 6);
+	
 	usart1_transimt_dma_config(TxData, 32);
 	usart1_receive_dma_ch2_config(RxData, 32);
-	
-	
+		
 	TIM6 -> CR1 |= TIM_CR1_CEN;
 	TIM6 -> DIER |= TIM_DIER_UIE;
 	
