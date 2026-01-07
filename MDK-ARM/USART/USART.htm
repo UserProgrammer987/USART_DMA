@@ -3,7 +3,7 @@
 <title>Static Call Graph - [USART\USART.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image USART\USART.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Tue Jan 06 23:09:36 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Wed Jan 07 15:40:09 2026
 <BR><P>
 <H3>Maximum Stack Usage =        200 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -862,7 +862,7 @@ Global Symbols
 <P><STRONG><a name="[53]"></a>SystemInit</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, system_stm32g4xx.o(i.SystemInit))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32g431xx.o(.text)
 </UL>
-<P><STRONG><a name="[3e]"></a>TIM6_DAC_IRQHandler</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, main.o(i.TIM6_DAC_IRQHandler))
+<P><STRONG><a name="[3e]"></a>TIM6_DAC_IRQHandler</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, main.o(i.TIM6_DAC_IRQHandler))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32g431xx.o(RESET)
 </UL>
 <P><STRONG><a name="[7c]"></a>TIM_Base_SetConfig</STRONG> (Thumb, 160 bytes, Stack size 28 bytes, stm32g4xx_hal_tim.o(i.TIM_Base_SetConfig))
@@ -904,8 +904,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_CheckIdleState
 </UL>
 
-<P><STRONG><a name="[31]"></a>USART1_IRQHandler</STRONG> (Thumb, 64 bytes, Stack size 12 bytes, main.o(i.USART1_IRQHandler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 60<LI>Call Chain = USART1_IRQHandler &rArr; readHoldingRegs &rArr; sendData &rArr; crc16
+<P><STRONG><a name="[31]"></a>USART1_IRQHandler</STRONG> (Thumb, 88 bytes, Stack size 20 bytes, main.o(i.USART1_IRQHandler))
+<BR><BR>[Stack]<UL><LI>Max Depth = 68<LI>Call Chain = USART1_IRQHandler &rArr; readHoldingRegs &rArr; sendData &rArr; crc16
 </UL>
 <BR>[Calls]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;readHoldingRegs
 </UL>
@@ -948,7 +948,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_IRQHandler
 </UL>
 
-<P><STRONG><a name="[9c]"></a>sendData</STRONG> (Thumb, 40 bytes, Stack size 12 bytes, main.o(i.sendData))
+<P><STRONG><a name="[9c]"></a>sendData</STRONG> (Thumb, 38 bytes, Stack size 12 bytes, main.o(i.sendData))
 <BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = sendData &rArr; crc16
 </UL>
 <BR>[Calls]<UL><LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;usart1_transmit_dma
@@ -964,12 +964,12 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[9a]"></a>usart1_transimt_dma_config</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, main.o(i.usart1_transimt_dma_config))
+<P><STRONG><a name="[9a]"></a>usart1_transimt_dma_config</STRONG> (Thumb, 44 bytes, Stack size 0 bytes, main.o(i.usart1_transimt_dma_config))
 <BR><BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sendData
 <LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[9e]"></a>usart1_transmit_dma</STRONG> (Thumb, 48 bytes, Stack size 0 bytes, main.o(i.usart1_transmit_dma))
+<P><STRONG><a name="[9e]"></a>usart1_transmit_dma</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, main.o(i.usart1_transmit_dma))
 <BR><BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sendData
 </UL>
 

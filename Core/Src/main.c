@@ -87,7 +87,7 @@ static const uint8_t table_crc_lo[] = {
 };
 
 static uint16_t Holding_Registers_Database[50]={
-		1234,  1111,  2222,  3333,  4444,  5555,  6666,  7777,  8888,  9999,   // 0-9   40001-40010
+		1235,  1111,  2222,  3333,  4444,  5555,  6666,  7777,  8888,  9999,   // 0-9   40001-40010
 		12345, 15432, 15535, 10234, 19876, 13579, 10293, 19827, 13456, 14567,  // 10-19 40011-40020
 		21345, 22345, 24567, 25678, 26789, 24680, 20394, 29384, 26937, 27654,  // 20-29 40021-40030
 		31245, 31456, 34567, 35678, 36789, 37890, 30948, 34958, 35867, 36092,  // 30-39 40031-40040
@@ -163,27 +163,28 @@ void SystemClock_Config(void);
 void usart1_transimt_dma_config(uint8_t *data, uint8_t size){
 	
 	USART1 -> CR3 |= USART_CR3_DMAT;
+	USART1 -> CR1 |= USART_CR1_TCIE;
 	
 	DMA1_Channel1 -> CCR |= DMA_CCR_TCIE;
 	
+	DMA1_Channel1 -> CNDTR = size;
 	DMA1_Channel1 -> CPAR = (uint32_t)&USART1 -> TDR;
 	DMA1_Channel1 -> CMAR = (uint32_t)data;
 	
 }
 
-void usart1_transmit_dma(uint8_t size){
-	
-	DMA1_Channel1 -> CNDTR = size;
+void usart1_transmit_dma(){
 	
 	DMA1_Channel1 -> CCR &= ~(DMA_CCR_EN);
 	
 	GPIOC -> ODR |= (1 << 6); //включить передачу по конвертеру
 	
-	DMA1_Channel1 -> CCR |= DMA_CCR_EN; 
-	
-	while (!(USART1 -> ISR  & USART_ISR_TC)); //подождать пока ответ дойдёт до master
-	GPIOC -> ODR &= ~(1 << 6); //выключить передачу по конвертеру и включить приём
+	DMA1_Channel1 -> CCR |= DMA_CCR_EN;
+
 	//HAL_Delay(1);
+	
+	//while (!(USART1 -> ISR  & USART_ISR_TC)); //подождать пока ответ дойдёт до master
+	
 	
 }
 
@@ -275,6 +276,7 @@ void TIM6_DAC_IRQHandler(void){
 	TIM6 -> SR &= ~TIM_SR_UIF;
 	
 	//usart1_transmit_dma(10);
+	Holding_Registers_Database[0] +=1;
 
 }
 
@@ -287,7 +289,7 @@ void sendData (uint8_t *data, int size)
 	data[size+1] = (crc>>8)&0xFF;  // CRC HIGH
 
 	usart1_transimt_dma_config(data, size+2);
-	usart1_transmit_dma(size+2);
+	usart1_transmit_dma();
 	
 }
 
@@ -349,6 +351,13 @@ void USART1_IRQHandler(void){
 		
 		DMA1_Channel2 -> CCR |= DMA_CCR_EN;
 		
+	}
+	
+	if (USART1 -> ISR & USART_ISR_TC){
+		
+		USART1 -> ICR |= USART_ICR_TCCF;
+		
+		GPIOC -> ODR &= ~(1 << 6); // включить режим приёма конвертера
 	}
 	
 }
