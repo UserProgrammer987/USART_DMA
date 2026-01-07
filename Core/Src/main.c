@@ -200,6 +200,8 @@ void usart1_receive_dma_ch2_config(uint8_t *data, uint8_t size){
 	DMA1_Channel2 -> CPAR = (uint32_t)&USART1 -> RDR;
 	DMA1_Channel2 -> CMAR = (uint32_t)data; 
 	
+	DMA1_Channel2 -> CCR |= DMA_CCR_EN;
+	
 }
 
 // usart 2 отправляет данные на пк по DMA
@@ -275,7 +277,6 @@ void TIM6_DAC_IRQHandler(void){
 	
 	TIM6 -> SR &= ~TIM_SR_UIF;
 	
-	//usart1_transmit_dma(10);
 	Holding_Registers_Database[0] +=1;
 
 }
@@ -322,7 +323,25 @@ uint8_t readHoldingRegs (void){
 	return 1;   // success
 }
 
+uint8_t writeSingleReg(){
+	
+	 uint16_t StartAdr = (((uint16_t)RxData[2] << 8) | RxData[3]);
+   uint16_t RegValue = (((uint16_t)RxData[4] << 8) | RxData[5]);
+    
+   Holding_Registers_Database[StartAdr] = RegValue;
+    
 
+    uint8_t data_to_send[6];
+    
+    data_to_send[0] = RxData[0]; // Адрес
+    data_to_send[1] = RxData[1]; // Функция
+    data_to_send[2] = RxData[2]; // Адрес HIGH
+    data_to_send[3] = RxData[3]; // Адрес LOW
+    data_to_send[4] = RxData[4]; // Значение HIGH
+    data_to_send[5] = RxData[5]; // Значение LOW
+    
+    sendData(data_to_send, 6);
+}
 
 
 void USART1_IRQHandler(void){
@@ -340,14 +359,17 @@ void USART1_IRQHandler(void){
 				case 0x03: 
 					readHoldingRegs();
 					break;
+				case 0x06:
+					writeSingleReg();
+					break;
 				default:
 					break;
 			}
 		
 		}
 		
-		DMA1_Channel2->CMAR = (uint32_t)RxData;
-    DMA1_Channel2->CNDTR = 256;
+		//DMA1_Channel2->CMAR = (uint32_t)RxData;
+    //DMA1_Channel2->CNDTR = 256;
 		
 		DMA1_Channel2 -> CCR |= DMA_CCR_EN;
 		
