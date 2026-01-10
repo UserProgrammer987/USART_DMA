@@ -160,10 +160,10 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 
 
-void usart1_transimt_dma_config(uint8_t *data, uint8_t size){
+void usart1_transimt_dma_config(uint8_t *data, uint16_t size){
 	
 	USART1 -> CR3 |= USART_CR3_DMAT;
-	USART1 -> CR1 |= USART_CR1_TCIE;
+	USART1 -> CR1 |= USART_CR1_TCIE; // прерывание по окончанию передачи ответа от slave
 	
 	DMA1_Channel1 -> CCR |= DMA_CCR_TCIE;
 	
@@ -188,13 +188,13 @@ void usart1_transmit_dma(){
 	
 }
 
-void usart1_receive_dma_ch2_config(uint8_t *data, uint8_t size){
+void usart1_receive_dma_ch2_config(uint8_t *data, uint16_t size){
 	
 	USART1 -> CR3 |= USART_CR3_DMAR;
 	
 	DMA1_Channel2 -> CCR |= DMA_CCR_TCIE;
 	
-	USART1 -> CR1 |= USART_CR1_IDLEIE;
+	USART1 -> CR1 |= USART_CR1_IDLEIE; // прерывание по IDLE для обработки запроса от master
 	
 	DMA1_Channel2 -> CNDTR = size;
 	DMA1_Channel2 -> CPAR = (uint32_t)&USART1 -> RDR;
@@ -288,7 +288,7 @@ void sendData (uint8_t *data, int size)
 	uint16_t crc = crc16(data, size);
 	data[size] = crc&0xFF;   // CRC LOW
 	data[size+1] = (crc>>8)&0xFF;  // CRC HIGH
-
+	
 	usart1_transimt_dma_config(data, size+2);
 	usart1_transmit_dma();
 	
@@ -323,32 +323,28 @@ uint8_t readHoldingRegs (void){
 	return 1;   // success
 }
 
-uint8_t writeSingleReg(){
+void writeSingleRegister(void) {
+		uint16_t StartAdr = (((uint16_t)RxData[2] << 8) | RxData[3]);
+    uint16_t RegValue = (((uint16_t)RxData[4] << 8) | RxData[5]);
+   
+    Holding_Registers_Database[StartAdr] = RegValue;
+    
+    TxData[0] = RxData[0]; // Адрес
+    TxData[1] = RxData[1]; // Функция
+    TxData[2] = RxData[2]; // Адрес HIGH
+    TxData[3] = RxData[3]; // Адрес LOW
+    TxData[4] = RxData[4]; // Значение HIGH
+    TxData[5] = RxData[5]; // Значение LOW
+    
+    sendData(TxData, 6);
 	
-	 uint16_t StartAdr = (((uint16_t)RxData[2] << 8) | RxData[3]);
-   uint16_t RegValue = (((uint16_t)RxData[4] << 8) | RxData[5]);
-    
-   Holding_Registers_Database[StartAdr] = RegValue;
-    
-
-    uint8_t data_to_send[6];
-    
-    data_to_send[0] = RxData[0]; // Адрес
-    data_to_send[1] = RxData[1]; // Функция
-    data_to_send[2] = RxData[2]; // Адрес HIGH
-    data_to_send[3] = RxData[3]; // Адрес LOW
-    data_to_send[4] = RxData[4]; // Значение HIGH
-    data_to_send[5] = RxData[5]; // Значение LOW
-    
-    sendData(data_to_send, 6);
 }
-
 
 void USART1_IRQHandler(void){
 	
 	if (USART1 -> ISR & USART_ISR_IDLE){
 		
-		USART1 -> ICR = USART_ICR_IDLECF; 
+		USART1 -> ICR |= USART_ICR_IDLECF; 
 		
 		DMA1_Channel2 -> CCR &= ~DMA_CCR_EN;
 		
@@ -360,7 +356,7 @@ void USART1_IRQHandler(void){
 					readHoldingRegs();
 					break;
 				case 0x06:
-					writeSingleReg();
+					writeSingleRegister();
 					break;
 				default:
 					break;
@@ -368,8 +364,8 @@ void USART1_IRQHandler(void){
 		
 		}
 		
-		//DMA1_Channel2->CMAR = (uint32_t)RxData;
-    //DMA1_Channel2->CNDTR = 256;
+		DMA1_Channel2->CMAR = (uint32_t)RxData;
+		DMA1_Channel2->CNDTR = 256;
 		
 		DMA1_Channel2 -> CCR |= DMA_CCR_EN;
 		
@@ -385,6 +381,23 @@ void USART1_IRQHandler(void){
 }
 
 
+/*
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
+{
+	if (RxData[0] == SLAVE_ID_mine)
+	{
+		switch (RxData[1]){
+		case 0x03:
+			readHoldingRegs();
+			break;
+		default:
+			break;
+		}
+	}
+
+	HAL_UARTEx_ReceiveToIdle_IT(&huart1, RxData, 256);
+}
+*/
 
 /* USER CODE END 0 */
 
@@ -420,14 +433,15 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 	
-	GPIOC -> ODR &= ~(1 << 6);
+	GPIOC -> ODR &= ~(1 << 6); //включить приёмник 
+	//GPIOC -> ODR |= (1 << 6);
 	
-	usart1_transimt_dma_config(TxData, 32);
-	usart1_receive_dma_ch2_config(RxData, 32);
+	usart1_transimt_dma_config(TxData, 256);
+	usart1_receive_dma_ch2_config(RxData, 256);
 		
 	TIM6 -> CR1 |= TIM_CR1_CEN;
 	TIM6 -> DIER |= TIM_DIER_UIE;
-	
+
   /* USER CODE END 2 */
 
   /* Infinite loop */

@@ -3,7 +3,7 @@
 <title>Static Call Graph - [USART\USART.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image USART\USART.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Wed Jan 07 17:58:05 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Sat Jan 10 16:08:03 2026
 <BR><P>
 <H3>Maximum Stack Usage =        200 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -904,10 +904,10 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_CheckIdleState
 </UL>
 
-<P><STRONG><a name="[31]"></a>USART1_IRQHandler</STRONG> (Thumb, 92 bytes, Stack size 16 bytes, main.o(i.USART1_IRQHandler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = USART1_IRQHandler &rArr; readHoldingRegs &rArr; sendData &rArr; crc16
+<P><STRONG><a name="[31]"></a>USART1_IRQHandler</STRONG> (Thumb, 104 bytes, Stack size 20 bytes, main.o(i.USART1_IRQHandler))
+<BR><BR>[Stack]<UL><LI>Max Depth = 68<LI>Call Chain = USART1_IRQHandler &rArr; readHoldingRegs &rArr; sendData &rArr; crc16
 </UL>
-<BR>[Calls]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;writeSingleReg
+<BR>[Calls]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;writeSingleRegister
 <LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;readHoldingRegs
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32g431xx.o(RESET)
@@ -925,7 +925,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sendData
 </UL>
 
-<P><STRONG><a name="[61]"></a>main</STRONG> (Thumb, 74 bytes, Stack size 0 bytes, main.o(i.main))
+<P><STRONG><a name="[61]"></a>main</STRONG> (Thumb, 78 bytes, Stack size 0 bytes, main.o(i.main))
 <BR><BR>[Stack]<UL><LI>Max Depth = 200<LI>Call Chain = main &rArr; MX_USART2_UART_Init &rArr; HAL_UART_Init &rArr; HAL_UART_MspInit &rArr; HAL_GPIO_Init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_USART2_UART_Init
@@ -956,7 +956,7 @@ Global Symbols
 <LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;usart1_transimt_dma_config
 <LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;crc16
 </UL>
-<BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;writeSingleReg
+<BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;writeSingleRegister
 <LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;readHoldingRegs
 </UL>
 
@@ -975,8 +975,8 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sendData
 </UL>
 
-<P><STRONG><a name="[9a]"></a>writeSingleReg</STRONG> (Thumb, 64 bytes, Stack size 12 bytes, main.o(i.writeSingleReg))
-<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = writeSingleReg &rArr; sendData &rArr; crc16
+<P><STRONG><a name="[9a]"></a>writeSingleRegister</STRONG> (Thumb, 52 bytes, Stack size 0 bytes, main.o(i.writeSingleRegister))
+<BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = writeSingleRegister &rArr; sendData &rArr; crc16
 </UL>
 <BR>[Calls]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sendData
 </UL>
