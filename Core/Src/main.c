@@ -25,6 +25,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stdbool.h"
+#include "Modbus.h"
 
 /* Table of CRC values for high-order byte */
 static const uint8_t table_crc_hi[] = {
@@ -102,6 +104,12 @@ static const uint16_t Input_Registers_Database[50]={
 		45678, 46789, 47890, 41235, 42356, 43567, 40596, 49586, 48765, 41029,  // 40-49 30041-30050
 };
 
+static bool coils[30] = {0};
+
+static const bool inputs[10] = {1, 0, 1, 1, 1, 0, 1, 1, 0, 0};
+
+extern uint16_t OutputRegisters[OutRegSize];
+
 uint16_t crc16(uint8_t *buffer, uint16_t buffer_length)
 {
     uint8_t crc_hi = 0xFF; /* high CRC byte initialized */
@@ -140,12 +148,8 @@ uint16_t crc16(uint8_t *buffer, uint16_t buffer_length)
 
 /* USER CODE BEGIN PV */
 
-uint8_t TxData[256];
-uint8_t RxData[256];
-
-uint8_t testRespond[7] = {0x01, 0x03, 0x00, 0x00, 0x02, 0x04, 0x57};
-
-uint8_t receive_cnt = 0;
+uint8_t TxData[255];
+uint8_t RxData[255];
 
 /* USER CODE END PV */
 
@@ -160,7 +164,7 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 
 
-void usart1_transimt_dma_config(uint8_t *data, uint16_t size){
+void usart1_transmit_dma_config(uint8_t *data, uint16_t size){
 	
 	USART1 -> CR3 |= USART_CR3_DMAT;
 	USART1 -> CR1 |= USART_CR1_TCIE; // прерывание по окончанию передачи ответа от slave
@@ -180,19 +184,11 @@ void usart1_transmit_dma(){
 	GPIOC -> ODR |= (1 << 6); //включить передачу по конвертеру
 	
 	DMA1_Channel1 -> CCR |= DMA_CCR_EN;
-
-	//HAL_Delay(1);
-	
-	//while (!(USART1 -> ISR  & USART_ISR_TC)); //подождать пока ответ дойдёт до master
-	
-	
 }
 
 void usart1_receive_dma_ch2_config(uint8_t *data, uint16_t size){
 	
 	USART1 -> CR3 |= USART_CR3_DMAR;
-	
-	DMA1_Channel2 -> CCR |= DMA_CCR_TCIE;
 	
 	USART1 -> CR1 |= USART_CR1_IDLEIE; // прерывание по IDLE для обработки запроса от master
 	
@@ -201,43 +197,6 @@ void usart1_receive_dma_ch2_config(uint8_t *data, uint16_t size){
 	DMA1_Channel2 -> CMAR = (uint32_t)data; 
 	
 	DMA1_Channel2 -> CCR |= DMA_CCR_EN;
-	
-}
-
-// usart 2 отправляет данные на пк по DMA
-void usart2_transimt_dma_config(uint8_t *data){
-	
-	USART2 -> CR3 |= USART_CR3_DMAT; 
-	
-	DMA1_Channel3 -> CCR |= DMA_CCR_TCIE; 
-	
-	
-	DMA1_Channel3 -> CPAR = (uint32_t)&USART2 -> TDR;
-	DMA1_Channel3 -> CMAR = (uint32_t)data;
-	
-	DMA1_Channel3 -> CCR |= DMA_CCR_EN;
-	
-}
-void usart2_transmit_dma(uint8_t size){
-	
-	DMA1_Channel3 -> CCR &= ~DMA_CCR_EN;
-	
-	DMA1_Channel3 -> CNDTR = size;
-	
-	DMA1_Channel3 -> CCR |= DMA_CCR_EN;
-	
-}
-
-// принятие данных по usart2 и usart1 работает в циклическом режиме DMA
-void usart2_recieve_DMA_ch4_config(uint8_t *data, uint8_t size){
-	
-	USART2 -> CR3 |= USART_CR3_DMAR; 
-	
-	DMA1_Channel4 -> CNDTR = size;
-	DMA1_Channel4 -> CPAR = (uint32_t)&USART2 -> RDR;
-	DMA1_Channel4 -> CMAR = (uint32_t)data; 
-	
-	DMA1_Channel4 -> CCR |= DMA_CCR_EN;
 	
 }
 
@@ -253,31 +212,12 @@ void DMA1_Channel1_IRQHandler(void){
 
 }
 
-void DMA1_Channel2_IRQHandler(void){
-	
-	if (DMA1 -> ISR & DMA_ISR_TCIF2){
-		DMA1 -> IFCR |= DMA_ISR_TCIF2;
-		
-	}
-	
-}
-
-void DMA1_Channel3_IRQHandler(void){
-	
-	if (DMA1 -> ISR & DMA_ISR_TCIF3){
-		
-		DMA1 -> IFCR |= DMA_ISR_TCIF3;
-		
-		DMA1_Channel3 -> CCR &= ~DMA_CCR_EN;
-		
-	}
-}
 
 void TIM6_DAC_IRQHandler(void){
 	
 	TIM6 -> SR &= ~TIM_SR_UIF;
 	
-	Holding_Registers_Database[0] +=1;
+	OutputRegisters[0] +=1;
 
 }
 
@@ -289,7 +229,7 @@ void sendData (uint8_t *data, int size)
 	data[size] = crc&0xFF;   // CRC LOW
 	data[size+1] = (crc>>8)&0xFF;  // CRC HIGH
 	
-	usart1_transimt_dma_config(data, size+2);
+	usart1_transmit_dma_config(data, size+2);
 	usart1_transmit_dma();
 	
 }
@@ -348,7 +288,7 @@ void USART1_IRQHandler(void){
 		
 		DMA1_Channel2 -> CCR &= ~DMA_CCR_EN;
 		
-		
+		/*
 		if (RxData[0] == SLAVE_ID_mine){
 			switch (RxData[1]) {
 				
@@ -363,9 +303,11 @@ void USART1_IRQHandler(void){
 			}
 		
 		}
+		*/
+		ModBusRTU_PR(RxData, 255, TxData, RS485_U0_send);
 		
 		DMA1_Channel2->CMAR = (uint32_t)RxData;
-		DMA1_Channel2->CNDTR = 256;
+		DMA1_Channel2->CNDTR = 255;
 		
 		DMA1_Channel2 -> CCR |= DMA_CCR_EN;
 		
@@ -379,25 +321,6 @@ void USART1_IRQHandler(void){
 	}
 	
 }
-
-
-/*
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
-{
-	if (RxData[0] == SLAVE_ID_mine)
-	{
-		switch (RxData[1]){
-		case 0x03:
-			readHoldingRegs();
-			break;
-		default:
-			break;
-		}
-	}
-
-	HAL_UARTEx_ReceiveToIdle_IT(&huart1, RxData, 256);
-}
-*/
 
 /* USER CODE END 0 */
 
@@ -430,14 +353,12 @@ int main(void)
   MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_TIM6_Init();
-  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 	
 	GPIOC -> ODR &= ~(1 << 6); //включить приёмник 
-	//GPIOC -> ODR |= (1 << 6);
 	
-	usart1_transimt_dma_config(TxData, 256);
-	usart1_receive_dma_ch2_config(RxData, 256);
+	usart1_transmit_dma_config(TxData, 255);
+	usart1_receive_dma_ch2_config(RxData, 255);
 		
 	TIM6 -> CR1 |= TIM_CR1_CEN;
 	TIM6 -> DIER |= TIM_DIER_UIE;

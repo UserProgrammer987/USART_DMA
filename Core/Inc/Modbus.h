@@ -8,14 +8,14 @@
 
 /* Settings for buffurs size */
 /*****************************/
-#define InRegSize			10
-#define OutRegSize		10
+#define InRegSize			50
+#define OutRegSize		50
 
 #define InCoilsSize		10
 #define OutCoilsSize	10
 
-#define RECEIVER_SIZE 		128
-#define TRANSCEIVER_SIZE 	128
+#define RECEIVER_SIZE 		255
+#define TRANSCEIVER_SIZE 	255
 
 /* Modbus Function Codes -----------------------------------------------------*/
 /******************************************************************************/
@@ -68,7 +68,7 @@
 
 /* Function prototypes ---------------------------------------------------------*/
 /********************************************************************************/
-void ModBusRTU_PR(uint8_t *Receiver_arr, uint8_t c_Receiver_arr, uint8_t *Transceiver_arr, void (*ModBusRTU_CallBack)(uint8_t));
+void ModBusRTU_PR(uint8_t *Receiver_arr, uint16_t c_Receiver_arr, uint8_t *Transceiver_arr, void (*ModBusRTU_CallBack)(uint8_t));
 void RS485_U0_send(uint8_t c_Transceiver_arr);
 void StartModbusTask(void const * argument);
 

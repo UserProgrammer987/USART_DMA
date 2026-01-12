@@ -36,3 +36,5 @@ usart\main.o: ../Core/Inc/dma.h
 usart\main.o: ../Core/Inc/tim.h
 usart\main.o: ../Core/Inc/usart.h
 usart\main.o: ../Core/Inc/gpio.h
+usart\main.o: D:\Andrew\Keil\ARM\ARMCC\Bin\..\include\stdbool.h
+usart\main.o: ../Core/Inc/Modbus.h
