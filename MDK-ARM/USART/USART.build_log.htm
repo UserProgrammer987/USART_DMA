@@ -27,12 +27,13 @@ Project File Date:  01/12/2026
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Andrew\Keil\ARM\ARMCC\Bin'
 Build target 'USART'
+compiling main.c...
 compiling Modbus.c...
-..\Core\Src\Modbus.c(354): warning:  #186-D: pointless comparison of unsigned integer with zero
-  		if((RegValue >= 0x0) && (RegValue <= 0xFFFF))		/*(Псевдо проверка, возможно в будущем понадобится установить границы)*/
+..\Core\Src\Modbus.c(302): warning:  #186-D: pointless comparison of unsigned integer with zero
+  		if((RegValue >= 0x0) && (RegValue <= 0xFFFF))		//(Псевдо проверка, возможно в будущем понадобится установить границы)/
 ..\Core\Src\Modbus.c: 1 warning, 0 errors
 linking...
-Program Size: Code=9062 RO-data=1082 RW-data=236 ZI-data=2564  
+Program Size: Code=9054 RO-data=574 RW-data=236 ZI-data=2308  
 FromELF: creating hex file...
 "USART\USART.axf" - 0 Error(s), 1 Warning(s).
 
@@ -58,7 +59,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.5.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:02
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>
