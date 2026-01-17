@@ -38,6 +38,16 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define SLAVE_ID_mine 1
+
+#define ACTION_REGISTER 0
+#define Num1_REGISTER 1
+#define Num2_REGISTER 2
+#define RESULT_REGISTER 3
+
+#define answer OutputRegisters[RESULT_REGISTER]
+#define num1 OutputRegisters[Num1_REGISTER]
+#define num2 OutputRegisters[Num2_REGISTER]
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -119,7 +129,21 @@ void TIM6_DAC_IRQHandler(void){
 	
 	TIM6 -> SR &= ~TIM_SR_UIF;
 	
-	OutputRegisters[0] += 1; // просто счётчик
+	switch (OutputRegisters[ACTION_REGISTER]){
+		case '*': 
+			answer = num1 * num2;
+			break;
+		case '+':
+			answer = num1 + num2;
+			break;
+		case '-':
+			answer = num1 - num2;
+			break;
+		case '/':
+			answer = num1 / num2;
+			break;
+	}
+	 
 
 }
 
@@ -159,6 +183,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -186,10 +211,10 @@ int main(void)
 	
 	usart1_transmit_dma_config(TxData, 128);
 	usart1_receive_dma_ch2_config(RxData, 128);
-		
-	TIM6 -> CR1 |= TIM_CR1_CEN;
-	TIM6 -> DIER |= TIM_DIER_UIE;
-
+	
+	TIM6->CR1 |= TIM_CR1_CEN;
+	TIM6->DIER |= TIM_DIER_UIE;
+	
   /* USER CODE END 2 */
 
   /* Infinite loop */

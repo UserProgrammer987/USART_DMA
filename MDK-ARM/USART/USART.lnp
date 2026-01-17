@@ -1,5 +1,6 @@
 --cpu=Cortex-M4.fp.sp
 "usart\startup_stm32g431xx.o"
+"usart\modbus.o"
 "usart\main.o"
 "usart\gpio.o"
 "usart\dma.o"
@@ -7,7 +8,6 @@
 "usart\usart.o"
 "usart\stm32g4xx_it.o"
 "usart\stm32g4xx_hal_msp.o"
-"usart\modbus.o"
 "usart\stm32g4xx_hal_pwr_ex.o"
 "usart\stm32g4xx_hal_tim.o"
 "usart\stm32g4xx_hal_tim_ex.o"
