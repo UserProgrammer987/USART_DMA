@@ -200,6 +200,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>answer,0x0A</ItemText>
         </Ww>
+        <Ww>
+          <count>10</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>RESULT_ENABLE,0x0A</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>

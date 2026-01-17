@@ -48,6 +48,9 @@
 #define num1 OutputRegisters[Num1_REGISTER]
 #define num2 OutputRegisters[Num2_REGISTER]
 
+#define ERROR OutputCoils[0] 
+#define RESULT_ENABLE InputCoils[1]
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -69,6 +72,8 @@ void SystemClock_Config(void);
 
 extern uint16_t OutputRegisters[OutRegSize];
 extern uint16_t InputRegisters[InRegSize];
+extern uint8_t OutputCoils[OutCoilsSize];
+extern uint8_t InputCoils[InCoilsSize];
 
 /* USER CODE END PFP */
 
@@ -129,6 +134,14 @@ void TIM6_DAC_IRQHandler(void){
 	
 	TIM6 -> SR &= ~TIM_SR_UIF;
 	
+	if ( (num2 == 0) && (OutputRegisters[ACTION_REGISTER] == '/') ){
+		ERROR = 1;
+		RESULT_ENABLE = 0;
+	} else {
+		ERROR = 0;
+		RESULT_ENABLE = 1;
+	}
+	
 	switch (OutputRegisters[ACTION_REGISTER]){
 		case '*': 
 			answer = num1 * num2;
@@ -142,9 +155,8 @@ void TIM6_DAC_IRQHandler(void){
 		case '/':
 			answer = num1 / num2;
 			break;
-	}
-	 
-
+	} 
+	
 }
 
 void USART1_IRQHandler(void){
@@ -183,6 +195,9 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+	
+	ERROR = 0;
+	RESULT_ENABLE = 1;
 
   /* USER CODE END 1 */
 
