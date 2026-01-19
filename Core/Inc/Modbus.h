@@ -11,8 +11,8 @@
 #define InRegSize			50
 #define OutRegSize		50
 
-#define InCoilsSize		10
-#define OutCoilsSize	10
+#define InCoilsSize		20
+#define OutCoilsSize	20
 
 #define RECEIVER_SIZE 		128
 #define TRANSCEIVER_SIZE 	128

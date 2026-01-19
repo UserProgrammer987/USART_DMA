@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "stdbool.h"
 #include "Modbus.h"
+#include <string.h>
 
 /* USER CODE END Includes */
 
@@ -39,17 +40,19 @@
 /* USER CODE BEGIN PD */
 #define SLAVE_ID_mine 1
 
-#define ACTION_REGISTER 0
+#define ACTION OutputRegisters[0]
 #define Num1_REGISTER 1
-#define Num2_REGISTER 2
-#define RESULT_REGISTER 3
+#define Num2_REGISTER 3
+#define RESULT_REGISTER 5
 
-#define answer OutputRegisters[RESULT_REGISTER]
-#define num1 OutputRegisters[Num1_REGISTER]
-#define num2 OutputRegisters[Num2_REGISTER]
+#define answer_H OutputRegisters[RESULT_REGISTER+1]
+#define answer_L OutputRegisters[RESULT_REGISTER]
+#define num1_H OutputRegisters[Num1_REGISTER+1]
+#define num1_L OutputRegisters[Num1_REGISTER]
+#define num2_H OutputRegisters[Num2_REGISTER+1]
+#define num2_L OutputRegisters[Num2_REGISTER]
 
 #define ERROR OutputCoils[0] 
-#define RESULT_ENABLE InputCoils[1]
 
 /* USER CODE END PD */
 
@@ -63,6 +66,9 @@
 
 uint8_t TxData[128];
 uint8_t RxData[128];
+
+uint32_t num1;
+uint32_t num2;
 
 /* USER CODE END PV */
 
@@ -129,20 +135,19 @@ void DMA1_Channel1_IRQHandler(void){
 
 }
 
-
-void TIM6_DAC_IRQHandler(void){
+void calc(char act){
+		
+	num1 = ((uint32_t)(num1_H) << 16) | num1_L;
+	num2 = ((uint32_t)(num2_H) << 16) | num2_L;
+	static uint32_t answer = 0;
 	
-	TIM6 -> SR &= ~TIM_SR_UIF;
-	
-	if ( (num2 == 0) && (OutputRegisters[ACTION_REGISTER] == '/') ){
+	if ( (num2 == 0) && (act == '/') ){
 		ERROR = 1;
-		RESULT_ENABLE = 0;
 	} else {
 		ERROR = 0;
-		RESULT_ENABLE = 1;
 	}
 	
-	switch (OutputRegisters[ACTION_REGISTER]){
+	switch (act){
 		case '*': 
 			answer = num1 * num2;
 			break;
@@ -155,7 +160,21 @@ void TIM6_DAC_IRQHandler(void){
 		case '/':
 			answer = num1 / num2;
 			break;
-	} 
+	}
+	
+	answer_H = (uint16_t)(answer >> 16);
+	answer_L = (uint16_t)(answer & 0xFFFF);
+
+}
+	
+
+
+void TIM6_DAC_IRQHandler(void){
+	
+	TIM6 -> SR &= ~TIM_SR_UIF;
+	
+	calc(ACTION);
+	
 	
 }
 
@@ -166,8 +185,10 @@ void USART1_IRQHandler(void){
 		USART1 -> ICR |= USART_ICR_IDLECF; 
 		
 		DMA1_Channel2 -> CCR &= ~DMA_CCR_EN;
+		
+		uint16_t frameLength = 128 - (DMA1_Channel2 -> CNDTR);
 
-		ModBusRTU_PR(RxData, 128, TxData, RS485_U0_send);
+		ModBusRTU_PR(RxData, frameLength, TxData, RS485_U0_send);
 		
 		DMA1_Channel2->CMAR = (uint32_t)RxData;
 		DMA1_Channel2->CNDTR = 128;
@@ -196,8 +217,8 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
 	
-	ERROR = 0;
-	RESULT_ENABLE = 1;
+	num1 = 0;
+	num2 = 0;
 
   /* USER CODE END 1 */
 

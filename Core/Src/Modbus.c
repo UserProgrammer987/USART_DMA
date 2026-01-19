@@ -16,21 +16,9 @@
 uint8_t Ready_To_ModBus;
 
 
-uint16_t InputRegisters[InRegSize] = {
-		0000,  10,  2222,  3333,  4444,  5555,  6666,  7777,  8888,  9999,   // 0-9   30001-30010
-		12345, 15432, 15535, 10234, 19876, 13579, 10293, 19827, 13456, 14567,  // 10-19 30011-30020
-		21345, 22345, 24567, 25678, 26789, 24680, 20394, 29384, 26937, 27654,  // 20-29 30021-30030
-		31245, 31456, 34567, 35678, 36789, 37890, 30948, 34958, 35867, 36092,  // 30-39 30031-30040
-		45678, 46789, 47890, 41235, 42356, 43567, 40596, 49586, 48765, 41029,  // 40-49 30041-30050
-};
+uint16_t InputRegisters[InRegSize] = {0};
 
-uint16_t OutputRegisters[OutRegSize] = {
-		47,  47,  45,  45,  4444,  5555,  6666,  7777,  8888,  9999,   // 0-9   40001-40010
-		12345, 15432, 15535, 10234, 19876, 13579, 10293, 19827, 13456, 14567,  // 10-19 40011-40020
-		21345, 22345, 24567, 25678, 26789, 24680, 20394, 29384, 26937, 27654,  // 20-29 40021-40030
-		31245, 31456, 34567, 35678, 36789, 37890, 30948, 34958, 35867, 36092,  // 30-39 40031-40040
-		45678, 46789, 47890, 41235, 42356, 43567, 40596, 49586, 48765, 41029,  // 40-49 40041-40050
-};
+uint16_t OutputRegisters[OutRegSize] = {0};
 
 uint8_t InputCoils[InCoilsSize] = {0};
 uint8_t OutputCoils[OutCoilsSize] = {0};
@@ -226,7 +214,8 @@ void Force_Multiple_Coils(uint8_t *RxData, uint8_t RxLength, uint8_t *TxData, ui
 				}
 
 				RxLength -= ByteCounter;
-				for(*TxLength = 2; *TxLength < RxLength; (*TxLength)++)		/*Формируем ответ как Эхо из запроса*/
+				//Здесь добавил RxLength - 1, потому что иначе скорее всего вызывало бы ошибку на HMI панели(хотя и выполняло бы функцию)
+				for(*TxLength = 2; *TxLength < RxLength-1; (*TxLength)++)		/*Формируем ответ как Эхо из запроса*/
 				{
 					TxData[*TxLength] = RxData[*TxLength];
 				}
@@ -344,7 +333,7 @@ void Preset_Multiple_Registers(uint8_t *RxData, uint8_t RxLength, uint8_t *TxDat
 				}
 
 				RxLength -= ByteCounter;
-				for(*TxLength = 2; *TxLength < RxLength; (*TxLength)++)		//Формируем ответ как Эхо из запроса/
+				for(*TxLength = 2; *TxLength < (RxLength-1); (*TxLength)++)		//Формируем ответ как Эхо из запроса/
 				{
 					TxData[*TxLength] = RxData[*TxLength];
 				}
@@ -421,11 +410,7 @@ void ModBusRTU_PR(uint8_t *Receiver_arr, uint8_t c_Receiver_arr, uint8_t *Transc
 				case(PRESET_MULTIPLE_REGISTERS): /*0x10*/
 					Preset_Multiple_Registers(Receiver_arr, c_Receiver_arr, Transceiver_arr, &c_Transceiver_arr); /*Запись нескольких регистров*/
 				break;
-
-				//case(READ_WRITE_MULTIPLE_REGISTERS):
-
-				//break;
-
+				
 				default:
 					Error_modbusRTU (Transceiver_arr, &c_Transceiver_arr, 0x01);	/*Ошибка команды, Полученная команда не поддерживается*/
 				break;
