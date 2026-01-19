@@ -147,9 +147,6 @@ void Force_Single_Coil(uint8_t *RxData, uint8_t RxLength, uint8_t *TxData, uint8
 					OutputCoils[StartAdr] &=~ (1<<StartAdrOf);
 				break;
 			}
-			// Ранее в цикле было *TxLength < Rxlength; что вызывало ошибку PLC Port StaNO 1, возможно из-за того, 
-			// что размер передаваемых данных был равен размеру буфера RxData,
-			// а нужно было передавать только 6 байт + 2 байта CRC
 			for(*TxLength = 2; *TxLength < 6; (*TxLength)++)		
 			{
 				TxData[*TxLength] = RxData[*TxLength];
@@ -292,9 +289,6 @@ void Preset_Single_Register(uint8_t *RxData, uint8_t RxLength, uint8_t *TxData, 
 		{
 			OutputRegisters[StartAdr] = RegValue;
 
-			// Ранее в цикле было *TxLength < Rxlength; что вызывало ошибку PLC Port StaNO 1, возможно из-за того, 
-			// что размер передаваемых данных был равен размеру буфера RxData,
-			// а нужно было передавать только 6 байт + 2 байта CRC
 			for(*TxLength = 2; *TxLength < 6; (*TxLength)++)		//Формируем Эхо запроса
 			{
 				TxData[*TxLength] = RxData[*TxLength];

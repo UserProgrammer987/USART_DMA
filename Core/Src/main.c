@@ -40,19 +40,19 @@
 /* USER CODE BEGIN PD */
 #define SLAVE_ID_mine 1
 
-#define ACTION OutputRegisters[0]
+#define ACTION OutputRegisters[0] // регистр операции
 #define Num1_REGISTER 1
 #define Num2_REGISTER 3
 #define RESULT_REGISTER 5
 
-#define answer_H OutputRegisters[RESULT_REGISTER+1]
+#define answer_H OutputRegisters[RESULT_REGISTER+1] // 32 битная display data для ответа
 #define answer_L OutputRegisters[RESULT_REGISTER]
-#define num1_H OutputRegisters[Num1_REGISTER+1]
+#define num1_H OutputRegisters[Num1_REGISTER+1] // для числа 1
 #define num1_L OutputRegisters[Num1_REGISTER]
-#define num2_H OutputRegisters[Num2_REGISTER+1]
+#define num2_H OutputRegisters[Num2_REGISTER+1] // для числа 2
 #define num2_L OutputRegisters[Num2_REGISTER]
 
-#define ERROR OutputCoils[0] 
+#define ERROR OutputCoils[0] // для плашки ERROR, если операция недопустима
 
 /* USER CODE END PD */
 
@@ -139,12 +139,12 @@ void calc(char act){
 		
 	num1 = ((uint32_t)(num1_H) << 16) | num1_L;
 	num2 = ((uint32_t)(num2_H) << 16) | num2_L;
-	static uint32_t answer = 0;
+	uint32_t answer = 0;
 	
-	if ( (num2 == 0) && (act == '/') ){
-		ERROR = 1;
+	if ((act == '/' && num2 == 0) || (act == '-' && num1 < num2)) {
+    ERROR = 1;
 	} else {
-		ERROR = 0;
+    ERROR = 0;
 	}
 	
 	switch (act){
