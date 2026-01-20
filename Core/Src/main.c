@@ -41,9 +41,10 @@
 #define SLAVE_ID_mine 1
 
 #define ACTION OutputRegisters[0] // регистр операции
-#define Num1_REGISTER 1
-#define Num2_REGISTER 3
-#define RESULT_REGISTER 5
+#define Num1_REGISTER 1 // начальный регистр 1го числа
+#define Num2_REGISTER 3 // начальный регистр 2го числа
+#define RESULT_REGISTER 5 // начальный регистр ответа
+#define frac_REGISTER 7 // регистр остатка от деления
 
 #define answer_H OutputRegisters[RESULT_REGISTER+1] // 32 битная display data для ответа
 #define answer_L OutputRegisters[RESULT_REGISTER]
@@ -51,6 +52,7 @@
 #define num1_L OutputRegisters[Num1_REGISTER]
 #define num2_H OutputRegisters[Num2_REGISTER+1] // для числа 2
 #define num2_L OutputRegisters[Num2_REGISTER]
+#define frac OutputRegisters[frac_REGISTER]
 
 #define ERROR OutputCoils[0] // для плашки ERROR, если операция недопустима
 
@@ -67,8 +69,9 @@
 uint8_t TxData[128];
 uint8_t RxData[128];
 
-uint32_t num1;
-uint32_t num2;
+int32_t num1;
+int32_t num2;
+uint16_t fraction;
 
 /* USER CODE END PV */
 
@@ -139,9 +142,9 @@ void calc(char act){
 		
 	num1 = ((uint32_t)(num1_H) << 16) | num1_L;
 	num2 = ((uint32_t)(num2_H) << 16) | num2_L;
-	uint32_t answer = 0;
+	int32_t answer = 0;
 	
-	if ((act == '/' && num2 == 0) || (act == '-' && num1 < num2)) {
+	if ((act == '/' && num2 == 0)) {
     ERROR = 1;
 	} else {
     ERROR = 0;
@@ -159,6 +162,7 @@ void calc(char act){
 			break;
 		case '/':
 			answer = num1 / num2;
+			frac = num1 % num2;
 			break;
 	}
 	
