@@ -143,6 +143,7 @@ void calc(char act){
 	num1 = ((uint32_t)(num1_H) << 16) | num1_L;
 	num2 = ((uint32_t)(num2_H) << 16) | num2_L;
 	int32_t answer = 0;
+	frac = 0;
 	
 	if ((act == '/' && num2 == 0)) {
     ERROR = 1;
