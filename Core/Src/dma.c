@@ -31,6 +31,54 @@
 
 /* USER CODE BEGIN 1 */
 
+void usart1_transmit_dma_config(uint8_t *data, uint16_t size){
+	
+	USART1 -> CR3 |= USART_CR3_DMAT;
+	USART1 -> CR1 |= USART_CR1_TCIE; // прерывание по окончанию передачи ответа от slave
+	
+	DMA1_Channel1 -> CCR |= DMA_CCR_TCIE;
+	
+	DMA1_Channel1 -> CNDTR = size;
+	DMA1_Channel1 -> CPAR = (uint32_t)&USART1 -> TDR;
+	DMA1_Channel1 -> CMAR = (uint32_t)data;
+	
+}
+
+void usart1_transmit_dma(){
+	
+	DMA1_Channel1 -> CCR &= ~(DMA_CCR_EN);
+	
+	GPIOC -> ODR |= (1 << 6); //включить передачу по конвертеру
+	
+	DMA1_Channel1 -> CCR |= DMA_CCR_EN;
+}
+
+void usart1_receive_dma_ch2_config(uint8_t *data, uint16_t size){
+	
+	USART1 -> CR3 |= USART_CR3_DMAR;
+	
+	USART1 -> CR1 |= USART_CR1_IDLEIE; // прерывание по IDLE для обработки запроса от master
+	
+	DMA1_Channel2 -> CNDTR = size;
+	DMA1_Channel2 -> CPAR = (uint32_t)&USART1 -> RDR;
+	DMA1_Channel2 -> CMAR = (uint32_t)data; 
+	
+	DMA1_Channel2 -> CCR |= DMA_CCR_EN;
+	
+}
+
+void DMA1_Channel1_IRQHandler(void){
+	
+	if (DMA1 -> ISR & DMA_ISR_TCIF1){
+		
+		DMA1 -> IFCR |= DMA_ISR_TCIF1;
+		
+		DMA1_Channel1 -> CCR &= ~DMA_CCR_EN;
+		
+	}
+
+}
+
 /* USER CODE END 1 */
 
 /**

@@ -15,6 +15,8 @@
 
 uint8_t Ready_To_ModBus;
 
+uint8_t TxData[128];
+uint8_t RxData[128];
 
 uint16_t InputRegisters[InRegSize] = {0};
 
@@ -147,7 +149,7 @@ void Force_Single_Coil(uint8_t *RxData, uint8_t RxLength, uint8_t *TxData, uint8
 					OutputCoils[StartAdr] &=~ (1<<StartAdrOf);
 				break;
 			}
-			for(*TxLength = 2; *TxLength < 6; (*TxLength)++)		
+			for(*TxLength = 2; *TxLength < RxLength; (*TxLength)++)		
 			{
 				TxData[*TxLength] = RxData[*TxLength];
 			}
@@ -426,6 +428,7 @@ void ModBusRTU_PR(uint8_t *Receiver_arr, uint8_t c_Receiver_arr, uint8_t *Transc
 /*----------------------------------------------------------------------------*/
 /* CallBack Functions for Responding                                          */
 /*----------------------------------------------------------------------------*/
+
 void RS485_U0_send(uint8_t c_Transceiver_arr)
 {
 
@@ -437,5 +440,32 @@ void RS485_U0_send(uint8_t c_Transceiver_arr)
 	
 }
 
+void USART1_IRQHandler(void){
+	
+	if (USART1 -> ISR & USART_ISR_IDLE){
+		
+		USART1 -> ICR |= USART_ICR_IDLECF; 
+		
+		DMA1_Channel2 -> CCR &= ~DMA_CCR_EN;
+		
+		uint16_t frameLength = 128 - (DMA1_Channel2 -> CNDTR);
+
+		ModBusRTU_PR(RxData, frameLength, TxData, RS485_U0_send);
+		
+		DMA1_Channel2->CMAR = (uint32_t)RxData;
+		DMA1_Channel2->CNDTR = 128;
+		
+		DMA1_Channel2 -> CCR |= DMA_CCR_EN;
+		
+	}
+	
+	if (USART1 -> ISR & USART_ISR_TC){
+		
+		USART1 -> ICR |= USART_ICR_TCCF;
+		
+		GPIOC -> ODR &= ~(1 << 6); // включить режим приёма конвертера
+	}
+	
+}
 /* USER CODE END 1 */
 

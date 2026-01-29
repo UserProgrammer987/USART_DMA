@@ -40,22 +40,6 @@
 /* USER CODE BEGIN PD */
 #define SLAVE_ID_mine 1
 
-#define ACTION OutputRegisters[0] // регистр операции
-#define Num1_REGISTER 1 // начальный регистр 1го числа
-#define Num2_REGISTER 3 // начальный регистр 2го числа
-#define RESULT_REGISTER 5 // начальный регистр ответа
-#define frac_REGISTER 7 // регистр остатка от деления
-
-#define answer_H OutputRegisters[RESULT_REGISTER+1] // 32 битная display data для ответа
-#define answer_L OutputRegisters[RESULT_REGISTER]
-#define num1_H OutputRegisters[Num1_REGISTER+1] // для числа 1
-#define num1_L OutputRegisters[Num1_REGISTER]
-#define num2_H OutputRegisters[Num2_REGISTER+1] // для числа 2
-#define num2_L OutputRegisters[Num2_REGISTER]
-#define frac OutputRegisters[frac_REGISTER]
-
-#define ERROR OutputCoils[0] // для плашки ERROR, если операция недопустима
-
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -66,12 +50,8 @@
 
 /* USER CODE BEGIN PV */
 
-uint8_t TxData[128];
-uint8_t RxData[128];
-
-int32_t num1;
-int32_t num2;
-uint16_t fraction;
+extern uint8_t TxData[128];
+extern uint8_t RxData[128];
 
 /* USER CODE END PV */
 
@@ -79,137 +59,10 @@ uint16_t fraction;
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 
-extern uint16_t OutputRegisters[OutRegSize];
-extern uint16_t InputRegisters[InRegSize];
-extern uint8_t OutputCoils[OutCoilsSize];
-extern uint8_t InputCoils[InCoilsSize];
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-
-void usart1_transmit_dma_config(uint8_t *data, uint16_t size){
-	
-	USART1 -> CR3 |= USART_CR3_DMAT;
-	USART1 -> CR1 |= USART_CR1_TCIE; // прерывание по окончанию передачи ответа от slave
-	
-	DMA1_Channel1 -> CCR |= DMA_CCR_TCIE;
-	
-	DMA1_Channel1 -> CNDTR = size;
-	DMA1_Channel1 -> CPAR = (uint32_t)&USART1 -> TDR;
-	DMA1_Channel1 -> CMAR = (uint32_t)data;
-	
-}
-
-void usart1_transmit_dma(){
-	
-	DMA1_Channel1 -> CCR &= ~(DMA_CCR_EN);
-	
-	GPIOC -> ODR |= (1 << 6); //включить передачу по конвертеру
-	
-	DMA1_Channel1 -> CCR |= DMA_CCR_EN;
-}
-
-void usart1_receive_dma_ch2_config(uint8_t *data, uint16_t size){
-	
-	USART1 -> CR3 |= USART_CR3_DMAR;
-	
-	USART1 -> CR1 |= USART_CR1_IDLEIE; // прерывание по IDLE для обработки запроса от master
-	
-	DMA1_Channel2 -> CNDTR = size;
-	DMA1_Channel2 -> CPAR = (uint32_t)&USART1 -> RDR;
-	DMA1_Channel2 -> CMAR = (uint32_t)data; 
-	
-	DMA1_Channel2 -> CCR |= DMA_CCR_EN;
-	
-}
-
-void DMA1_Channel1_IRQHandler(void){
-	
-	if (DMA1 -> ISR & DMA_ISR_TCIF1){
-		
-		DMA1 -> IFCR |= DMA_ISR_TCIF1;
-		
-		DMA1_Channel1 -> CCR &= ~DMA_CCR_EN;
-		
-	}
-
-}
-
-void calc(char act){
-		
-	num1 = ((uint32_t)(num1_H) << 16) | num1_L;
-	num2 = ((uint32_t)(num2_H) << 16) | num2_L;
-	int32_t answer = 0;
-	frac = 0;
-	
-	if ((act == '/' && num2 == 0)) {
-    ERROR = 1;
-	} else {
-    ERROR = 0;
-	}
-	
-	switch (act){
-		case '*': 
-			answer = num1 * num2;
-			break;
-		case '+':
-			answer = num1 + num2;
-			break;
-		case '-':
-			answer = num1 - num2;
-			break;
-		case '/':
-			answer = num1 / num2;
-			frac = num1 % num2;
-			break;
-	}
-	
-	answer_H = (uint16_t)(answer >> 16);
-	answer_L = (uint16_t)(answer & 0xFFFF);
-
-}
-	
-
-
-void TIM6_DAC_IRQHandler(void){
-	
-	TIM6 -> SR &= ~TIM_SR_UIF;
-	
-	calc(ACTION);
-	
-	
-}
-
-void USART1_IRQHandler(void){
-	
-	if (USART1 -> ISR & USART_ISR_IDLE){
-		
-		USART1 -> ICR |= USART_ICR_IDLECF; 
-		
-		DMA1_Channel2 -> CCR &= ~DMA_CCR_EN;
-		
-		uint16_t frameLength = 128 - (DMA1_Channel2 -> CNDTR);
-
-		ModBusRTU_PR(RxData, frameLength, TxData, RS485_U0_send);
-		
-		DMA1_Channel2->CMAR = (uint32_t)RxData;
-		DMA1_Channel2->CNDTR = 128;
-		
-		DMA1_Channel2 -> CCR |= DMA_CCR_EN;
-		
-	}
-	
-	if (USART1 -> ISR & USART_ISR_TC){
-		
-		USART1 -> ICR |= USART_ICR_TCCF;
-		
-		GPIOC -> ODR &= ~(1 << 6); // включить режим приёма конвертера
-	}
-	
-}
 
 /* USER CODE END 0 */
 
@@ -221,9 +74,6 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	
-	num1 = 0;
-	num2 = 0;
 
   /* USER CODE END 1 */
 

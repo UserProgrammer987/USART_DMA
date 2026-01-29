@@ -535,6 +535,11 @@
               <FileType>1</FileType>
               <FilePath>../Core/Src/stm32g4xx_hal_msp.c</FilePath>
             </File>
+            <File>
+              <FileName>calc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\calc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

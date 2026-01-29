@@ -42,6 +42,10 @@ void MX_DMA_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 
+extern void usart1_receive_dma_ch2_config(uint8_t *data, uint16_t size);
+extern void usart1_transmit_dma(void);
+extern void usart1_transmit_dma_config(uint8_t *data, uint16_t size);
+
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
