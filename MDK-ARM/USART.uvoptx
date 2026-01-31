@@ -168,7 +168,7 @@
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>DMA1_Channel1 -&gt; CNDTR</ItemText>
+          <ItemText>\\USART\../Core/Src/Modbus.c\Tx_Modbus_RS485</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
@@ -178,42 +178,42 @@
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>\\USART\../Core/Src/Modbus.c\Tx_Modbus_RS485</ItemText>
+          <ItemText>c_Transceiver_arr</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>RxData</ItemText>
+          <ItemText>answer,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>TxData</ItemText>
+          <ItemText>RESULT_ENABLE,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>1</WinNumber>
-          <ItemText>c_Transceiver_arr</ItemText>
+          <ItemText>button</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
           <WinNumber>1</WinNumber>
-          <ItemText>answer,0x0A</ItemText>
+          <ItemText>c_Transceiver_arr</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>1</WinNumber>
-          <ItemText>RESULT_ENABLE,0x0A</ItemText>
+          <ItemText>c_Transceiver_arr</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>1</WinNumber>
-          <ItemText>num1_L</ItemText>
+          <ItemText>c_Transceiver_arr</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>1</WinNumber>
-          <ItemText>button</ItemText>
+          <ItemText>c_Transceiver_arr</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
@@ -228,127 +228,72 @@
         <Ww>
           <count>15</count>
           <WinNumber>1</WinNumber>
-          <ItemText>c_Transceiver_arr</ItemText>
+          <ItemText>Tx_Modbus_RS485</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>1</WinNumber>
-          <ItemText>c_Transceiver_arr</ItemText>
+          <ItemText>Tx_Modbus_RS485</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
           <WinNumber>1</WinNumber>
-          <ItemText>c_Transceiver_arr</ItemText>
+          <ItemText>answer_H,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>18</count>
           <WinNumber>1</WinNumber>
-          <ItemText>c_Transceiver_arr</ItemText>
+          <ItemText>answer_L,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>19</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Tx_Modbus_RS485</ItemText>
+          <ItemText>answer</ItemText>
         </Ww>
         <Ww>
           <count>20</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Tx_Modbus_RS485</ItemText>
+          <ItemText>temp</ItemText>
         </Ww>
         <Ww>
           <count>21</count>
           <WinNumber>1</WinNumber>
-          <ItemText>OutputRegisters,0x10</ItemText>
+          <ItemText>key</ItemText>
         </Ww>
         <Ww>
           <count>22</count>
           <WinNumber>1</WinNumber>
-          <ItemText>num1_H,0x0A</ItemText>
+          <ItemText>div</ItemText>
         </Ww>
         <Ww>
           <count>23</count>
           <WinNumber>1</WinNumber>
-          <ItemText>num1_L,0x0A</ItemText>
+          <ItemText>num1</ItemText>
         </Ww>
         <Ww>
           <count>24</count>
           <WinNumber>1</WinNumber>
-          <ItemText>num2_H,0x0A</ItemText>
+          <ItemText>numbers,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>25</count>
           <WinNumber>1</WinNumber>
-          <ItemText>num2_L,0x0A</ItemText>
+          <ItemText>fracNumbers</ItemText>
         </Ww>
         <Ww>
           <count>26</count>
           <WinNumber>1</WinNumber>
-          <ItemText>answer_H,0x0A</ItemText>
+          <ItemText>fracNum1,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>27</count>
           <WinNumber>1</WinNumber>
-          <ItemText>answer_L,0x0A</ItemText>
+          <ItemText>fracPart1</ItemText>
         </Ww>
         <Ww>
           <count>28</count>
           <WinNumber>1</WinNumber>
-          <ItemText>answer</ItemText>
-        </Ww>
-        <Ww>
-          <count>29</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>OutputCoils</ItemText>
-        </Ww>
-        <Ww>
-          <count>30</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>temp</ItemText>
-        </Ww>
-        <Ww>
-          <count>31</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>key</ItemText>
-        </Ww>
-        <Ww>
-          <count>32</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>num1,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>33</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>numbers</ItemText>
-        </Ww>
-        <Ww>
-          <count>34</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>ind,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>35</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>fracNumbers</ItemText>
-        </Ww>
-        <Ww>
-          <count>36</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>fracNum1,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>37</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>fracInd</ItemText>
-        </Ww>
-        <Ww>
-          <count>38</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>fracPart1</ItemText>
-        </Ww>
-        <Ww>
-          <count>39</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>div</ItemText>
+          <ItemText>intNum1,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>
