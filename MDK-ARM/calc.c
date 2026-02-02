@@ -11,29 +11,27 @@ extern uint8_t InputCoils[InCoilsSize];
 #define DOT 10
 #define SIGN 11
 #define ACTION 12
+#define ENTER 13
 
 // каждая кнопка имеет 2 функции - менять BUTTON_REGISTER на нужный символ и активировать PRESSED_FLAG
 #define PRESSED_FLAG OutputCoils[0] // флаг нажатой кнопки
-#define BUTTON_REGISTER OutputRegisters[0] //
-
-#define num1_L OutputRegisters[1] 
-#define num1_H OutputRegisters[2]
-
-#define num2_L OutputRegisters[3]
-#define num2_H OutputRegisters[4]
+#define BUTTON_REGISTER OutputRegisters[0] // регистр кнопки
+#define ACTION_REGISTER OutputRegisters[5] // регистр действия 
+#define ANSWER_REGISTER OutputRegisters[6] // регистр ответа 
+#define ANSWER(indx) OutputRegisters[(indx) + 6]
 
 
-uint32_t intNum1 = 0;
-uint32_t intNum2 = 0;
+#define num_L(indx) OutputRegisters[(indx) * 2 - 1] 
+#define num_H(indx) OutputRegisters[(indx) * 2]
 
-uint32_t fracNum1 = 0;
-float fracPart1;
+uint8_t actual_number = 0;
 
-uint32_t fracNum2 = 0;
-float fracPart2;
+uint32_t intNum[2] = {0};
+uint32_t fracNum[2] = {0};
+float fracPart[2];
+float num[2];
 
-float num1;
-float num2;
+float answer = 0;
 
 uint8_t numbers[10];
 uint8_t ind = 0;
@@ -43,6 +41,7 @@ uint8_t fracInd = 0;
 
 uint8_t fracFlag = 0;
 uint8_t signFlag = 0;
+uint8_t actFlag = 0;
 
 void floatToBits(float num, uint16_t* float_H, uint16_t* float_L){
 	
@@ -73,46 +72,57 @@ void assemble_num(uint8_t nums[], uint32_t* number, uint8_t fracIndicator){
 
 }
 
-void input_numbers_intNum1(){
+void input_numbers_intNum(){
 	
 	numbers[ind] = BUTTON_REGISTER;
 	BUTTON_REGISTER = 0;
 	ind++;
 	
-	assemble_num(numbers, &intNum1, 0);
-	num1 = (float)(intNum1);
-	if (signFlag) num1 = -num1;
-	floatToBits(num1, &num1_H, &num1_L);
+	assemble_num(numbers, &intNum[actual_number], 0);
+	num[actual_number] = (float)(intNum[actual_number]);
+	if (signFlag) num[actual_number] = -num[actual_number];
+	floatToBits(num[actual_number], &num_H(actual_number+1), &num_L(actual_number+1));
 
 	
 }
 
-void input_numbers_fracNum1(){
+void input_numbers_fracNum(){
 	
 	fracNumbers[fracInd] = BUTTON_REGISTER;
 	BUTTON_REGISTER = 0;
 	fracInd++;
 		
-	assemble_num(fracNumbers, &fracNum1, 1);
+	assemble_num(fracNumbers, &fracNum[actual_number], 1);
 
 	float div = 1.0f;
 	for (uint8_t i = 0; i < fracInd; i++){
 		div *= 10.0f;
 	}
 	
-	fracPart1 = (float)(fracNum1) / div;
-	num1 = (float)intNum1 + fracPart1;
-	if (signFlag) num1 = -num1;
+	fracPart[actual_number] = (float)(fracNum[actual_number]) / div;
+	num[actual_number] = (float)intNum[actual_number] + fracPart[actual_number];
+	if (signFlag) num[actual_number] = -num[actual_number];
 	
-	floatToBits(num1, &num1_H, &num1_L);	
+	floatToBits(num[actual_number], &num_H(actual_number+1), &num_L(actual_number+1));	
 	
 }
 
 void changeSign(){
 	
 	signFlag = ~signFlag;
-	num1 *= -1;
-	floatToBits(num1, &num1_H, &num1_L);	
+	num[actual_number] *= -1;
+	floatToBits(num[actual_number], &num_H((actual_number)+1), &num_L(actual_number+1));	
+}
+
+void act(){
+	actFlag = 1;
+	
+	actual_number++;
+	ind = 0;
+	fracInd = 0;
+	fracFlag = 0;
+	signFlag = 0;
+	
 }
 
 void button_PR(){
@@ -127,17 +137,41 @@ void button_PR(){
 		if (BUTTON_REGISTER <= NUMBER){
 			switch (fracFlag){
 				case 0: 
-					input_numbers_intNum1();
+					input_numbers_intNum();
 					break;
 				case 1: 
-					input_numbers_fracNum1();
+					input_numbers_fracNum();
 					break;
 			}
 			
 		}
 		
-		if (BUTTON_REGISTER == 10){
+		if (BUTTON_REGISTER == DOT){
 			fracFlag = 1;
+		}
+		
+		if (BUTTON_REGISTER == ACTION){
+			act();
+		}
+		
+		if (BUTTON_REGISTER == ENTER){
+			switch (ACTION_REGISTER) {
+				case '+': 
+					answer = num[0] + num[1];
+					break;
+				case '-':
+					answer = num[0] - num[1];
+					break;
+				case '*':
+					answer = num[0] * num[1];
+					break;
+				case '/':
+					answer = num[0] / num[1];
+					break;
+			}
+			
+			floatToBits(answer, &ANSWER(1), &ANSWER(0));
+			
 		}
 		
 		

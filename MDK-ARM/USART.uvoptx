@@ -295,6 +295,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>intNum1,0x0A</ItemText>
         </Ww>
+        <Ww>
+          <count>29</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>RxBuf</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
