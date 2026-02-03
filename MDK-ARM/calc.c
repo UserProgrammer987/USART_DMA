@@ -17,15 +17,14 @@ extern uint8_t InputCoils[InCoilsSize];
 #define PRESSED_FLAG OutputCoils[0] // флаг нажатой кнопки
 #define BUTTON_REGISTER OutputRegisters[0] // регистр кнопки
 #define ACTION_REGISTER OutputRegisters[5] // регистр действия 
-#define ANSWER_REGISTER OutputRegisters[6] // регистр ответа 
-#define ANSWER(indx) OutputRegisters[(indx) + 6]
+#define ANSWER(indx) OutputRegisters[(indx) + 6] // регистр ответа
 
 #define num_L(indx) OutputRegisters[(indx) * 2 - 1]  //регистр LOW байта числа
 #define num_H(indx) OutputRegisters[(indx) * 2] //регистр HIGH байта числа
 
-#define HISTORY_num(id, numInd, HL) OutputRegisters[(id) * 7 + (numInd) * 2 + 8 + (HL)] 
-#define HISTORY_action(index) OutputRegisters[(index) * 7 + 14]
-#define HISTORY_answer(i, HL) OutputRegisters[(i) * 7 + 12 + (HL)]
+#define HISTORY_num(id, numInd, HL) OutputRegisters[(id) * 7 + (numInd) * 2 + 8 + (HL)] //регистры истории чисел
+#define HISTORY_action(index) OutputRegisters[(index) * 7 + 14] // регистры истории действия
+#define HISTORY_answer(i, HL) OutputRegisters[(i) * 7 + 12 + (HL)] // регистры истории ответа
 
 #define LOW 0
 #define HIGH 1
@@ -263,18 +262,23 @@ void button_PR(){
 		}
 		
 		switch (BUTTON_REGISTER){
+			
 			case SIGN:
 				SIGN_PR();
 				break;
+			
 			case DOT:
 				fracFlag = 1;
 				break;
+			
 			case ACTION:
 				act();
 				break;
+			
 			case ENTER:
 				ENTER_PR();
 				break;
+			
 			default:
 				break;
 		}
