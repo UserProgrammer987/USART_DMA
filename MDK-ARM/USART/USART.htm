@@ -3,7 +3,7 @@
 <title>Static Call Graph - [USART\USART.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image USART\USART.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Wed Feb 04 13:48:03 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Wed Feb 04 15:13:03 2026
 <BR><P>
 <H3>Maximum Stack Usage =        192 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -539,8 +539,8 @@ Global Symbols
 </UL>
 <P><STRONG><a name="[e1]"></a>__semihosting_library_function</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, indicate_semi.o(.text), UNUSED)
 
-<P><STRONG><a name="[6b]"></a>DELETE_PR</STRONG> (Thumb, 224 bytes, Stack size 32 bytes, calc.o(i.DELETE_PR))
-<BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = DELETE_PR &rArr; assemble_num
+<P><STRONG><a name="[6b]"></a>DELETE_PR</STRONG> (Thumb, 304 bytes, Stack size 36 bytes, calc.o(i.DELETE_PR))
+<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = DELETE_PR &rArr; assemble_num
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;floatToBits
 <LI><a href="#[6c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assemble_num
@@ -554,8 +554,8 @@ Global Symbols
 <P><STRONG><a name="[a]"></a>DebugMon_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32g4xx_it.o(i.DebugMon_Handler))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32g431xx.o(RESET)
 </UL>
-<P><STRONG><a name="[6e]"></a>ENTER_PR</STRONG> (Thumb, 122 bytes, Stack size 8 bytes, calc.o(i.ENTER_PR))
-<BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = ENTER_PR &rArr; history_PR &rArr; historyShow
+<P><STRONG><a name="[6e]"></a>ENTER_PR</STRONG> (Thumb, 122 bytes, Stack size 16 bytes, calc.o(i.ENTER_PR))
+<BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = ENTER_PR &rArr; history_PR &rArr; historyShow
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;history_PR
 <LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;floatToBits
@@ -881,8 +881,8 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32g431xx.o(RESET)
 </UL>
-<P><STRONG><a name="[9f]"></a>NUMBER_PR</STRONG> (Thumb, 40 bytes, Stack size 8 bytes, calc.o(i.NUMBER_PR))
-<BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = NUMBER_PR &rArr; clearCalc &rArr; __aeabi_memclr4
+<P><STRONG><a name="[9f]"></a>NUMBER_PR</STRONG> (Thumb, 46 bytes, Stack size 16 bytes, calc.o(i.NUMBER_PR))
+<BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = NUMBER_PR &rArr; clearCalc &rArr; __aeabi_memclr4
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;input_numbers_intNum
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;input_numbers_fracNum
@@ -961,7 +961,7 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32g431xx.o(.text)
 </UL>
 <P><STRONG><a name="[3e]"></a>TIM6_DAC_IRQHandler</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, calc.o(i.TIM6_DAC_IRQHandler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = TIM6_DAC_IRQHandler &rArr; button_PR &rArr; SIGN_PR &rArr; clearCalc &rArr; __aeabi_memclr4
+<BR><BR>[Stack]<UL><LI>Max Depth = 68<LI>Call Chain = TIM6_DAC_IRQHandler &rArr; button_PR &rArr; NUMBER_PR &rArr; clearCalc &rArr; __aeabi_memclr4
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;button_PR
 </UL>
@@ -980,8 +980,8 @@ Global Symbols
 <P><STRONG><a name="[8e]"></a>UART_CheckIdleState</STRONG> (Thumb, 172 bytes, Stack size 32 bytes, stm32g4xx_hal_uart.o(i.UART_CheckIdleState))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = UART_CheckIdleState &rArr; UART_WaitOnFlagUntilTimeout &rArr; UART_EndRxTransfer
 </UL>
-<BR>[Calls]<UL><LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
-<LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_WaitOnFlagUntilTimeout
+<BR>[Calls]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_WaitOnFlagUntilTimeout
+<LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 </UL>
 <BR>[Called By]<UL><LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Init
 </UL>
@@ -1000,8 +1000,8 @@ Global Symbols
 <P><STRONG><a name="[a9]"></a>UART_WaitOnFlagUntilTimeout</STRONG> (Thumb, 148 bytes, Stack size 32 bytes, stm32g4xx_hal_uart.o(i.UART_WaitOnFlagUntilTimeout))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = UART_WaitOnFlagUntilTimeout &rArr; UART_EndRxTransfer
 </UL>
-<BR>[Calls]<UL><LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
-<LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_EndRxTransfer
+<BR>[Calls]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_EndRxTransfer
+<LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 </UL>
 <BR>[Called By]<UL><LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_CheckIdleState
 </UL>
@@ -1020,11 +1020,11 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32g431xx.o(RESET)
 </UL>
-<P><STRONG><a name="[ae]"></a>act</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, calc.o(i.act))
+<P><STRONG><a name="[ae]"></a>act</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, calc.o(i.act))
 <BR><BR>[Called By]<UL><LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;button_PR
 </UL>
 
-<P><STRONG><a name="[6c]"></a>assemble_num</STRONG> (Thumb, 42 bytes, Stack size 12 bytes, calc.o(i.assemble_num))
+<P><STRONG><a name="[6c]"></a>assemble_num</STRONG> (Thumb, 52 bytes, Stack size 12 bytes, calc.o(i.assemble_num))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = assemble_num
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;input_numbers_intNum
@@ -1032,8 +1032,8 @@ Global Symbols
 <LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DELETE_PR
 </UL>
 
-<P><STRONG><a name="[a8]"></a>button_PR</STRONG> (Thumb, 90 bytes, Stack size 8 bytes, calc.o(i.button_PR))
-<BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = button_PR &rArr; SIGN_PR &rArr; clearCalc &rArr; __aeabi_memclr4
+<P><STRONG><a name="[a8]"></a>button_PR</STRONG> (Thumb, 100 bytes, Stack size 16 bytes, calc.o(i.button_PR))
+<BR><BR>[Stack]<UL><LI>Max Depth = 68<LI>Call Chain = button_PR &rArr; NUMBER_PR &rArr; clearCalc &rArr; __aeabi_memclr4
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clearCalc
 <LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;act
@@ -1051,7 +1051,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SIGN_PR
 </UL>
 
-<P><STRONG><a name="[a0]"></a>clearCalc</STRONG> (Thumb, 114 bytes, Stack size 32 bytes, calc.o(i.clearCalc))
+<P><STRONG><a name="[a0]"></a>clearCalc</STRONG> (Thumb, 140 bytes, Stack size 32 bytes, calc.o(i.clearCalc))
 <BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = clearCalc &rArr; __aeabi_memclr4
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;floatToBits
@@ -1084,7 +1084,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;history_PR
 </UL>
 
-<P><STRONG><a name="[6f]"></a>history_PR</STRONG> (Thumb, 38 bytes, Stack size 20 bytes, calc.o(i.history_PR))
+<P><STRONG><a name="[6f]"></a>history_PR</STRONG> (Thumb, 42 bytes, Stack size 20 bytes, calc.o(i.history_PR))
 <BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = history_PR &rArr; historyShow
 </UL>
 <BR>[Calls]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;historyShow
@@ -1093,7 +1093,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ENTER_PR
 </UL>
 
-<P><STRONG><a name="[a1]"></a>input_numbers_fracNum</STRONG> (Thumb, 156 bytes, Stack size 20 bytes, calc.o(i.input_numbers_fracNum))
+<P><STRONG><a name="[a1]"></a>input_numbers_fracNum</STRONG> (Thumb, 178 bytes, Stack size 20 bytes, calc.o(i.input_numbers_fracNum))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = input_numbers_fracNum &rArr; assemble_num
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;floatToBits
@@ -1102,8 +1102,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NUMBER_PR
 </UL>
 
-<P><STRONG><a name="[a2]"></a>input_numbers_intNum</STRONG> (Thumb, 92 bytes, Stack size 20 bytes, calc.o(i.input_numbers_intNum))
-<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = input_numbers_intNum &rArr; assemble_num
+<P><STRONG><a name="[a2]"></a>input_numbers_intNum</STRONG> (Thumb, 100 bytes, Stack size 16 bytes, calc.o(i.input_numbers_intNum))
+<BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = input_numbers_intNum &rArr; assemble_num
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;floatToBits
 <LI><a href="#[6c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assemble_num

@@ -32,7 +32,7 @@ extern uint8_t InputCoils[InCoilsSize];
 #define HIGH 1
 
 
-uint8_t actual_number = 0;
+int8_t actual_number = 0;
 
 uint32_t intNum[2] = {0};
 uint32_t fracNum[2] = {0};
@@ -48,18 +48,25 @@ typedef struct {
 	char action;
 } history;
 
+typedef struct {
+	uint8_t numbers[10];
+	uint8_t fracNumbers[10];
+} module;
+
+module numParts[2];
+
 history equations[3];
 
 uint8_t numbers[10];
-uint8_t ind = 0;
+uint8_t ind[2] = {0}; // индикатор целой части
 
 uint8_t fracNumbers[10];
-uint8_t fracInd = 0;
+uint8_t fracInd[2] = {0}; // индикатор дробной части
 
-uint8_t fracFlag = 0;
-uint8_t signFlag = 0;
-uint8_t answerFlag = 0;
-uint8_t actFlag = 0;
+bool fracFlag[2] = {0}; // флаг дробной части
+bool signFlag = 0; //флаг смены числа
+bool answerFlag = 0; // флаг ответа
+bool actFlag = 0; // флаг действия
 
 void floatToBits(float num, uint16_t* float_H, uint16_t* float_L){
 	
@@ -76,9 +83,9 @@ void assemble_num(uint8_t nums[], uint32_t* number, uint8_t fracIndicator){
 
 	uint8_t indx;
 	if (fracIndicator){
-		indx = fracInd;
+		indx = fracInd[actual_number];
 	} else {
-		indx = ind;
+		indx = ind[actual_number];
 	}
 
 	*number = 0;
@@ -92,11 +99,11 @@ void assemble_num(uint8_t nums[], uint32_t* number, uint8_t fracIndicator){
 
 void input_numbers_intNum(uint8_t n){
 	
-	numbers[ind] = BUTTON_REGISTER;
+	numParts[n].numbers[ind[n]] = BUTTON_REGISTER;
 	BUTTON_REGISTER = 0;
-	ind++;
+	ind[n]++;
 	
-	assemble_num(numbers, &intNum[n], 0);
+	assemble_num(numParts[n].numbers, &intNum[n], 0);
 	num[n] = (float)(intNum[n]);
 	if (signFlag) num[n] = -num[n];
 	floatToBits(num[n], &num_H(n+1), &num_L(n+1));
@@ -106,14 +113,14 @@ void input_numbers_intNum(uint8_t n){
 
 void input_numbers_fracNum(uint8_t n){
 	
-	fracNumbers[fracInd] = BUTTON_REGISTER;
+	numParts[n].fracNumbers[fracInd[n]] = BUTTON_REGISTER;
 	BUTTON_REGISTER = 0;
-	fracInd++;
+	fracInd[n]++;
 		
-	assemble_num(fracNumbers, &fracNum[n], 1);
+	assemble_num(numParts[n].fracNumbers, &fracNum[n], 1);
 
 	float div = 1.0f;
-	for (uint8_t i = 0; i < fracInd; i++){
+	for (uint8_t i = 0; i < fracInd[n]; i++){
 		div *= 10.0f;
 	}
 	
@@ -133,12 +140,13 @@ void changeSign(uint8_t n){
 	
 }
 
-void act(){
+void act(uint8_t n){
 
 	if (!actFlag) actual_number++;
-	ind = 0;
-	fracInd = 0;
-	fracFlag = 0;
+	n = actual_number;
+	ind[n] = 0;
+	fracInd[n] = 0;
+	fracFlag[n] = 0;
 	signFlag = 0;
 	
 	actFlag = 1;
@@ -147,9 +155,14 @@ void act(){
 
 void clearCalc(){
 	
-	ind = 0;
-	fracInd = 0;
-	fracFlag = 0;
+	ind[0] = 0;
+	fracInd[0] = 0;
+	fracFlag[0] = 0;
+	
+	ind[1] = 0;
+	fracInd[1] = 0;
+	fracFlag[1] = 0;
+	
 	signFlag = 0;
 	actFlag = 0;
 	
@@ -157,8 +170,11 @@ void clearCalc(){
 	num[0] = 0;
 	num[1] = 0;
 	answer = 0;
-	memset(numbers, 0, sizeof(numbers));
-	memset(fracNumbers, 0, sizeof(fracNumbers));
+	memset(numParts[0].numbers, 0, sizeof(numbers));
+	memset(numParts[0].fracNumbers, 0, sizeof(fracNumbers));
+	
+	memset(numParts[1].numbers, 0, sizeof(numbers));
+	memset(numParts[1].fracNumbers, 0, sizeof(fracNumbers));
 	
 	floatToBits(num[0], &num_H(1), &num_L(1));
 	floatToBits(num[1], &num_H(2), &num_L(2));
@@ -203,38 +219,46 @@ void history_PR(){
 	
 }
 
-void DELETE_PR(uint8_t n){
+void DELETE_PR(){
 	
-	if (fracFlag) {
+	uint8_t n = actual_number;
+	
+	if (num[n] == 0) {
+		actual_number = 0;
+		actFlag = 0;
 		
-		fracNumbers[fracInd] = 0;
-		fracInd--;
+		n = actual_number;
+	}
+	
+	if (fracFlag[n]) {
 		
-		assemble_num(fracNumbers, &fracNum[n], 1);
+		numParts[n].fracNumbers[fracInd[n]] = 0;
+		fracInd[n]--;
+		
+		if (fracInd[n] == 0) {
+			fracFlag[n] = 0;
+		}	
+	
+		assemble_num(numParts[n].fracNumbers, &fracNum[n], 1);
 
 		float div = 1.0f;
-		for (uint8_t i = 0; i < fracInd; i++){
+		for (uint8_t i = 0; i < fracInd[n]; i++){
 			div *= 10.0f;
 		}
 		
 		fracPart[n] = (float)(fracNum[n]) / div;
-
-		if (fracInd == 0) {
-			fracFlag = 0;
-		}	
-		
 		num[n] = (float)intNum[n] + fracPart[n];
 		if (signFlag) num[n] = -num[n];
 		
 		floatToBits(num[n], &num_H(n+1), &num_L(n+1));	
 	} else {
 		
-		if (ind == 0) return;
+		if (ind[n] == 0) return;
+
+		numbers[ind[n]] = 0;
+		ind[n]--;
 		
-		numbers[ind] = 0;
-		ind--;
-		
-		assemble_num(numbers, &intNum[n], 0);
+		assemble_num(numParts[n].numbers, &intNum[n], 0);
 		num[n] = (float)(intNum[n]);
 		
 		if (signFlag) num[n] = -num[n];
@@ -245,12 +269,14 @@ void DELETE_PR(uint8_t n){
 
 void NUMBER_PR(){
 	
+	uint8_t n = actual_number;
+	
 	if (answerFlag){
 		clearCalc();
 		answerFlag = 0;
 	}
 			
-	if (!fracFlag){ 
+	if (!fracFlag[n]){ 
 			input_numbers_intNum(actual_number);
 	} else {
 			input_numbers_fracNum(actual_number);
@@ -272,7 +298,8 @@ void SIGN_PR(){
 void ENTER_PR(){
 	
 	if (answerFlag){
-		num[0] = answer;	
+		num[0] = answer;
+    floatToBits(num[0], &num_H(1), &num_L(1));		
 	}
 			
 	switch (ACTION_REGISTER) {
@@ -298,6 +325,8 @@ void ENTER_PR(){
 
 void button_PR(){
 	
+	uint8_t n = actual_number;
+	
 	if (PRESSED_FLAG) {
 		PRESSED_FLAG = 0;
 		
@@ -312,11 +341,11 @@ void button_PR(){
 				break;
 			
 			case DOT:
-				fracFlag = 1;
+				fracFlag[n] = 1;
 				break;
 			
 			case ACTION:
-				act();
+				act(n);
 				break;
 			
 			case ENTER:
@@ -325,9 +354,11 @@ void button_PR(){
 			
 			case CLEAR:
 				clearCalc();
+				break;
 			
 			case DELETE:
-				DELETE_PR(actual_number);
+				DELETE_PR();
+				break;
 			
 			default:
 				break;
