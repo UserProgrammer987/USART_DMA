@@ -12,6 +12,8 @@ extern uint8_t InputCoils[InCoilsSize];
 #define SIGN 11
 #define ACTION 12
 #define ENTER 13
+#define DELETE 14
+#define CLEAR 15
 
 // каждая кнопка имеет 2 функции - менять BUTTON_REGISTER на нужный символ и активировать PRESSED_FLAG
 #define PRESSED_FLAG OutputCoils[0] // флаг нажатой кнопки
@@ -57,6 +59,7 @@ uint8_t fracInd = 0;
 uint8_t fracFlag = 0;
 uint8_t signFlag = 0;
 uint8_t answerFlag = 0;
+uint8_t actFlag = 0;
 
 void floatToBits(float num, uint16_t* float_H, uint16_t* float_L){
 	
@@ -125,17 +128,20 @@ void input_numbers_fracNum(uint8_t n){
 void changeSign(uint8_t n){
 	
 	signFlag = ~signFlag;
-	num[n] *= -1;
+	num[n] = -num[n];
 	floatToBits(num[n], &num_H(n+1), &num_L(n+1));	
+	
 }
 
 void act(){
-	
-	actual_number++;
+
+	if (!actFlag) actual_number++;
 	ind = 0;
 	fracInd = 0;
 	fracFlag = 0;
 	signFlag = 0;
+	
+	actFlag = 1;
 	
 }
 
@@ -145,6 +151,7 @@ void clearCalc(){
 	fracInd = 0;
 	fracFlag = 0;
 	signFlag = 0;
+	actFlag = 0;
 	
 	actual_number = 0;
 	num[0] = 0;
@@ -196,6 +203,46 @@ void history_PR(){
 	
 }
 
+void DELETE_PR(uint8_t n){
+	
+	if (fracFlag) {
+		
+		fracNumbers[fracInd] = 0;
+		fracInd--;
+		
+		assemble_num(fracNumbers, &fracNum[n], 1);
+
+		float div = 1.0f;
+		for (uint8_t i = 0; i < fracInd; i++){
+			div *= 10.0f;
+		}
+		
+		fracPart[n] = (float)(fracNum[n]) / div;
+
+		if (fracInd == 0) {
+			fracFlag = 0;
+		}	
+		
+		num[n] = (float)intNum[n] + fracPart[n];
+		if (signFlag) num[n] = -num[n];
+		
+		floatToBits(num[n], &num_H(n+1), &num_L(n+1));	
+	} else {
+		
+		if (ind == 0) return;
+		
+		numbers[ind] = 0;
+		ind--;
+		
+		assemble_num(numbers, &intNum[n], 0);
+		num[n] = (float)(intNum[n]);
+		
+		if (signFlag) num[n] = -num[n];
+		floatToBits(num[n], &num_H(n+1), &num_L(n+1));
+	}
+	
+}
+
 void NUMBER_PR(){
 	
 	if (answerFlag){
@@ -203,13 +250,10 @@ void NUMBER_PR(){
 		answerFlag = 0;
 	}
 			
-	switch (fracFlag){
-		case 0: 
+	if (!fracFlag){ 
 			input_numbers_intNum(actual_number);
-			break;
-		case 1: 
+	} else {
 			input_numbers_fracNum(actual_number);
-			break;
 	}
 
 }
@@ -278,6 +322,12 @@ void button_PR(){
 			case ENTER:
 				ENTER_PR();
 				break;
+			
+			case CLEAR:
+				clearCalc();
+			
+			case DELETE:
+				DELETE_PR(actual_number);
 			
 			default:
 				break;
