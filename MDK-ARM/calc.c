@@ -32,7 +32,7 @@ extern uint8_t InputCoils[InCoilsSize];
 #define HIGH 1
 
 
-int8_t actual_number = 0;
+uint8_t actual_number = 0;
 
 uint32_t intNum[2] = {0};
 uint32_t fracNum[2] = {0};
@@ -155,26 +155,19 @@ void act(uint8_t n){
 
 void clearCalc(){
 	
-	ind[0] = 0;
-	fracInd[0] = 0;
-	fracFlag[0] = 0;
-	
-	ind[1] = 0;
-	fracInd[1] = 0;
-	fracFlag[1] = 0;
+	for (uint8_t i = 0; i<1; i++){
+		ind[i] = 0;
+		fracInd[i] = 0;
+		fracFlag[i] = 0;
+		num[i] = 0;
+		memset(numParts[i].numbers, 0, sizeof(numbers));
+		memset(numParts[i].fracNumbers, 0, sizeof(fracNumbers));
+	}
 	
 	signFlag = 0;
 	actFlag = 0;
-	
 	actual_number = 0;
-	num[0] = 0;
-	num[1] = 0;
 	answer = 0;
-	memset(numParts[0].numbers, 0, sizeof(numbers));
-	memset(numParts[0].fracNumbers, 0, sizeof(fracNumbers));
-	
-	memset(numParts[1].numbers, 0, sizeof(numbers));
-	memset(numParts[1].fracNumbers, 0, sizeof(fracNumbers));
 	
 	floatToBits(num[0], &num_H(1), &num_L(1));
 	floatToBits(num[1], &num_H(2), &num_L(2));
@@ -195,8 +188,7 @@ void historyFill(uint8_t index){
 void historyShow(uint8_t id){
 	
 	float n[2] = {equations[id].num1, equations[id].num2};
-	char ac = equations[id].action;
-	HISTORY_action(id) = ac;
+	HISTORY_action(id) = equations[id].action;
 	float an = equations[id].ans;
 	
 	floatToBits(n[0], &HISTORY_num(id, 0, HIGH), &HISTORY_num(id, 0, LOW));
@@ -219,9 +211,7 @@ void history_PR(){
 	
 }
 
-void DELETE_PR(){
-	
-	uint8_t n = actual_number;
+void DELETE_PR(uint8_t n){
 	
 	if (num[n] == 0) {
 		actual_number = 0;
@@ -267,9 +257,7 @@ void DELETE_PR(){
 	
 }
 
-void NUMBER_PR(){
-	
-	uint8_t n = actual_number;
+void NUMBER_PR(uint8_t n){
 	
 	if (answerFlag){
 		clearCalc();
@@ -277,21 +265,21 @@ void NUMBER_PR(){
 	}
 			
 	if (!fracFlag[n]){ 
-			input_numbers_intNum(actual_number);
+			input_numbers_intNum(n);
 	} else {
-			input_numbers_fracNum(actual_number);
+			input_numbers_fracNum(n);
 	}
 
 }
 
-void SIGN_PR(){
+void SIGN_PR(uint8_t n){
 	
 	if (answerFlag){
 		clearCalc();
 		answerFlag = 0;
 	}
 	
-	changeSign(actual_number);
+	changeSign(n);
 			
 }
 
@@ -299,7 +287,9 @@ void ENTER_PR(){
 	
 	if (answerFlag){
 		num[0] = answer;
-    floatToBits(num[0], &num_H(1), &num_L(1));		
+    floatToBits(num[0], &num_H(1), &num_L(1));
+
+
 	}
 			
 	switch (ACTION_REGISTER) {
@@ -325,27 +315,25 @@ void ENTER_PR(){
 
 void button_PR(){
 	
-	uint8_t n = actual_number;
-	
 	if (PRESSED_FLAG) {
 		PRESSED_FLAG = 0;
 		
 		if (BUTTON_REGISTER <= NUMBER){
-			NUMBER_PR();
+			NUMBER_PR(actual_number);
 		}
 		
 		switch (BUTTON_REGISTER){
 			
 			case SIGN:
-				SIGN_PR();
+				SIGN_PR(actual_number);
 				break;
 			
 			case DOT:
-				fracFlag[n] = 1;
+				fracFlag[actual_number] = 1;
 				break;
 			
 			case ACTION:
-				act(n);
+				act(actual_number);
 				break;
 			
 			case ENTER:
@@ -357,7 +345,7 @@ void button_PR(){
 				break;
 			
 			case DELETE:
-				DELETE_PR();
+				DELETE_PR(actual_number);
 				break;
 			
 			default:

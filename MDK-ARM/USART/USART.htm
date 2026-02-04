@@ -3,7 +3,7 @@
 <title>Static Call Graph - [USART\USART.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image USART\USART.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Wed Feb 04 15:13:03 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Wed Feb 04 16:47:01 2026
 <BR><P>
 <H3>Maximum Stack Usage =        192 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -882,7 +882,7 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32g431xx.o(RESET)
 </UL>
 <P><STRONG><a name="[9f]"></a>NUMBER_PR</STRONG> (Thumb, 46 bytes, Stack size 16 bytes, calc.o(i.NUMBER_PR))
-<BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = NUMBER_PR &rArr; clearCalc &rArr; __aeabi_memclr4
+<BR><BR>[Stack]<UL><LI>Max Depth = 68<LI>Call Chain = NUMBER_PR &rArr; clearCalc &rArr; __aeabi_memclr4
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;input_numbers_intNum
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;input_numbers_fracNum
@@ -929,8 +929,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ModBusRTU_PR
 </UL>
 
-<P><STRONG><a name="[a3]"></a>SIGN_PR</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, calc.o(i.SIGN_PR))
-<BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = SIGN_PR &rArr; clearCalc &rArr; __aeabi_memclr4
+<P><STRONG><a name="[a3]"></a>SIGN_PR</STRONG> (Thumb, 28 bytes, Stack size 16 bytes, calc.o(i.SIGN_PR))
+<BR><BR>[Stack]<UL><LI>Max Depth = 68<LI>Call Chain = SIGN_PR &rArr; clearCalc &rArr; __aeabi_memclr4
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clearCalc
 <LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;changeSign
@@ -961,7 +961,7 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32g431xx.o(.text)
 </UL>
 <P><STRONG><a name="[3e]"></a>TIM6_DAC_IRQHandler</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, calc.o(i.TIM6_DAC_IRQHandler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 68<LI>Call Chain = TIM6_DAC_IRQHandler &rArr; button_PR &rArr; NUMBER_PR &rArr; clearCalc &rArr; __aeabi_memclr4
+<BR><BR>[Stack]<UL><LI>Max Depth = 84<LI>Call Chain = TIM6_DAC_IRQHandler &rArr; button_PR &rArr; SIGN_PR &rArr; clearCalc &rArr; __aeabi_memclr4
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;button_PR
 </UL>
@@ -1024,7 +1024,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;button_PR
 </UL>
 
-<P><STRONG><a name="[6c]"></a>assemble_num</STRONG> (Thumb, 52 bytes, Stack size 12 bytes, calc.o(i.assemble_num))
+<P><STRONG><a name="[6c]"></a>assemble_num</STRONG> (Thumb, 50 bytes, Stack size 12 bytes, calc.o(i.assemble_num))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = assemble_num
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;input_numbers_intNum
@@ -1032,8 +1032,8 @@ Global Symbols
 <LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DELETE_PR
 </UL>
 
-<P><STRONG><a name="[a8]"></a>button_PR</STRONG> (Thumb, 100 bytes, Stack size 16 bytes, calc.o(i.button_PR))
-<BR><BR>[Stack]<UL><LI>Max Depth = 68<LI>Call Chain = button_PR &rArr; NUMBER_PR &rArr; clearCalc &rArr; __aeabi_memclr4
+<P><STRONG><a name="[a8]"></a>button_PR</STRONG> (Thumb, 106 bytes, Stack size 16 bytes, calc.o(i.button_PR))
+<BR><BR>[Stack]<UL><LI>Max Depth = 84<LI>Call Chain = button_PR &rArr; SIGN_PR &rArr; clearCalc &rArr; __aeabi_memclr4
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clearCalc
 <LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;act
@@ -1051,8 +1051,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SIGN_PR
 </UL>
 
-<P><STRONG><a name="[a0]"></a>clearCalc</STRONG> (Thumb, 140 bytes, Stack size 32 bytes, calc.o(i.clearCalc))
-<BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = clearCalc &rArr; __aeabi_memclr4
+<P><STRONG><a name="[a0]"></a>clearCalc</STRONG> (Thumb, 152 bytes, Stack size 48 bytes, calc.o(i.clearCalc))
+<BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = clearCalc &rArr; __aeabi_memclr4
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;floatToBits
 <LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
