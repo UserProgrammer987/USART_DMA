@@ -32,14 +32,14 @@ extern uint8_t InputCoils[InCoilsSize];
 #define HIGH 1
 
 
-uint8_t actual_number = 0;
+uint8_t actual_number = 0; // индиктор того, какое число редактируется
 
-uint32_t intNum[2] = {0};
-uint32_t fracNum[2] = {0};
-float fracPart[2];
-float num[2] = {0};
+uint32_t intNum[2] = {0}; // массив целых частей числа
+uint32_t fracNum[2] = {0}; // массив дробных частей числа
+float fracPart[2]; // собранная дробная часть числа
+float num[2] = {0}; // собранная целая часть числа
 
-float answer = 0;
+float answer = 0; 
 
 typedef struct {
 	float num1;
@@ -49,18 +49,15 @@ typedef struct {
 } history;
 
 typedef struct {
-	uint8_t numbers[10];
-	uint8_t fracNumbers[10];
+	uint8_t numbers[10]; // массив для сборки целой части числа
+	uint8_t fracNumbers[10]; // массив для сборки дробной части числа
 } module;
 
-module numParts[2];
+module numParts[2]; // отдельные массивы целой и дробной части для разных чисел
 
-history equations[3];
+history equations[3]; // массив истории выражения
 
-uint8_t numbers[10];
 uint8_t ind[2] = {0}; // индикатор целой части
-
-uint8_t fracNumbers[10];
 uint8_t fracInd[2] = {0}; // индикатор дробной части
 
 bool fracFlag[2] = {0}; // флаг дробной части
@@ -160,8 +157,8 @@ void clearCalc(){
 		fracInd[i] = 0;
 		fracFlag[i] = 0;
 		num[i] = 0;
-		memset(numParts[i].numbers, 0, sizeof(numbers));
-		memset(numParts[i].fracNumbers, 0, sizeof(fracNumbers));
+		memset(numParts[i].numbers, 0, sizeof(numParts[i].numbers));
+		memset(numParts[i].fracNumbers, 0, sizeof(numParts[i].fracNumbers));
 	}
 	
 	signFlag = 0;
@@ -213,13 +210,6 @@ void history_PR(){
 
 void DELETE_PR(uint8_t n){
 	
-	if (num[n] == 0) {
-		actual_number = 0;
-		actFlag = 0;
-		
-		n = actual_number;
-	}
-	
 	if (fracFlag[n]) {
 		
 		numParts[n].fracNumbers[fracInd[n]] = 0;
@@ -245,7 +235,7 @@ void DELETE_PR(uint8_t n){
 		
 		if (ind[n] == 0) return;
 
-		numbers[ind[n]] = 0;
+		numParts[n].numbers[ind[n]] = 0;
 		ind[n]--;
 		
 		assemble_num(numParts[n].numbers, &intNum[n], 0);
